@@ -1,4 +1,4 @@
-import ComponentView, { html } from './component-view.js';
+import ComponentView, { html } from '../component-view.js';
 
 export default class OfferOptionView extends ComponentView {
   constructor() {
@@ -14,7 +14,7 @@ export default class OfferOptionView extends ComponentView {
    * @param {number} price
    * @param {boolean} isChecked
    */
-  createAdjacentHtml(id, title, price, isChecked) {
+  createTemplate(id, title, price, isChecked) {
     return html`
       <input 
         class="event__offer-checkbox  visually-hidden" 

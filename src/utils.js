@@ -47,3 +47,5 @@ export const capitalizeFirstLetter = (text) => {
 export const formatDate = (date, format) => dayjs(date).format(format);
 
 export const isKeyEscape = (event) => (event.key === 'Escape' || event.key === 'Esc');
+
+export const getIconUrl = (name) => `img/icons/${name}.png`;

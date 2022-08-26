@@ -1,4 +1,4 @@
-import ComponentView, {html} from './component-view.js';
+import ComponentView, {html} from '../component-view.js';
 
 export default class DestinationInputView extends ComponentView {
   constructor() {
@@ -10,11 +10,14 @@ export default class DestinationInputView extends ComponentView {
   /**
    * @override
    */
-  createAdjacentHtml() {
+  createTemplate() {
     return html`
-      <label class="event__label  event__type-output" for="event-destination-1"></label>
+      <label 
+        class="event__label  event__type-output" 
+        for="event-destination-1"
+      ></label>
       <input 
-        class="event__input  event__input--destination" 
+        class="event__input event__input--destination" 
         id="event-destination-1" 
         type="text" 
         name="event-destination" 
@@ -25,13 +28,26 @@ export default class DestinationInputView extends ComponentView {
     `;
   }
 
-  setLabel() { }
+  /** @param {string} label */
+  setLabel(label) {
+    const view = this.querySelector('.event__type-output');
 
-  setValue() { }
+    view.textContent = label;
 
-  /**
-   * @param {[string, string][]} states
-   */
+    return this;
+  }
+
+  /** @param {string} value */
+  setValue(value) {
+    /** @type {HTMLInputElement} */
+    const view = this.querySelector('.event__input--destination');
+
+    view.value = value;
+
+    return this;
+  }
+
+  /** @param {[string, string][]} states */
   setOptions(states) {
     const views = states.map((state) => new Option(...state));
 

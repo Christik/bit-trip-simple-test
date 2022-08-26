@@ -1,24 +1,26 @@
 import ComponentView, { html } from './component-view.js';
+import PointOffersView from './point/point-offers-view.js';
+import { getIconUrl } from '../utils.js';
 
-/**
- * Представление точки маршрута
- */
+// TODO: Установить datetime как iso
+
 export default class PointView extends ComponentView {
-  expandButtonView = this.querySelector('.event__rollup-btn');
-
   constructor() {
     super();
 
-    this.expandButtonView.addEventListener('click', () => {
+    /** @type {PointOffersView} */
+    this.pointOffersView = this.querySelector(String(PointOffersView));
+
+    const expandButtonView = this.querySelector('.event__rollup-btn');
+
+    expandButtonView.addEventListener('click', () => {
       const expandEvent = new CustomEvent('expand');
       this.dispatchEvent(expandEvent);
     });
   }
 
-  /**
-   * @override
-   */
-  createAdjacentHtml() {
+  /** @override */
+  createTemplate() {
     return html`
       <div class="event">
         <time class="event__date" datetime="2000-01-01">DEC 00</time>
@@ -37,8 +39,7 @@ export default class PointView extends ComponentView {
           &euro;&nbsp;<span class="event__price-value">0</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        <div class="event__selected-offers">
-        </div>
+        ${PointOffersView}
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -46,10 +47,7 @@ export default class PointView extends ComponentView {
     `;
   }
 
-  /**
-   * Устанавливает заголовок
-   * @param {string} title
-   */
+  /** @param {string} title */
   setTitle(title) {
     const view = this.querySelector('.event__title');
 
@@ -58,30 +56,22 @@ export default class PointView extends ComponentView {
     return this;
   }
 
-  /**
-   * Устанавливает имя иконки
-   * @param {PointType} name
-   */
+  /** @param {PointType} name */
   setIcon(name) {
-    /**
-     * @type {HTMLImageElement}
-     */
+    /** @type {HTMLImageElement} */
     const view = this.querySelector('.event__type-icon');
 
-    view.src = `img/icons/${name}.png`;
+    view.src = getIconUrl(name);
 
     return this;
   }
 
   /**
-   * Устанавливает дату
    * @param {string} dateForHuman
    * @param {string} dateForMachine
    */
   setDate(dateForHuman, dateForMachine) {
-    /**
-     * @type {HTMLTimeElement}
-     */
+    /** @type {HTMLTimeElement} */
     const view = this.querySelector('.event__date');
 
     view.textContent = dateForHuman;
@@ -91,14 +81,11 @@ export default class PointView extends ComponentView {
   }
 
   /**
-   * Устанавливает время начала
    * @param {string} timeForHuman
    * @param {string} timeForMachine
    */
   setStartTime(timeForHuman, timeForMachine) {
-    /**
-     * @type {HTMLTimeElement}
-     */
+    /** @type {HTMLTimeElement} */
     const view = this.querySelector('.event__start-time');
 
     view.textContent = timeForHuman;
@@ -108,14 +95,11 @@ export default class PointView extends ComponentView {
   }
 
   /**
-   * Устанавливает время окончания
    * @param {string} timeForHuman
    * @param {string} timeForMachine
    */
   setEndTime(timeForHuman, timeForMachine) {
-    /**
-     * @type {HTMLTimeElement}
-     */
+    /** @type {HTMLTimeElement} */
     const view = this.querySelector('.event__end-time');
 
     view.textContent = timeForHuman;
@@ -124,10 +108,7 @@ export default class PointView extends ComponentView {
     return this;
   }
 
-  /**
-   * Устанавливает цену
-   * @param {string} price
-   */
+  /** @param {string} price */
   setPrice(price) {
     const view = this.querySelector('.event__price-value');
 
@@ -135,18 +116,6 @@ export default class PointView extends ComponentView {
 
     return this;
   }
-
-  /**
-   * Добавляет DOM-элементы оферов
-   * @param {...HTMLElement} offerViews
-   */
-  replaceOffers(...offerViews) {
-    const view = this.querySelector('.event__selected-offers');
-
-    view.replaceChildren(...offerViews);
-
-    return this;
-  }
 }
 
-customElements.define('trip-point', PointView);
+customElements.define(String(PointView), PointView);

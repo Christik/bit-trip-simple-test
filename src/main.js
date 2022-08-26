@@ -1,9 +1,9 @@
-import FilterView from './view/filter-view.js';
+import RouteModel from './model/route-model.js';
+import './view/filter-view.js';
 import RoutePresenter from './presenter/route-presenter.js';
+// import EditorPresenter from './presenter/editor-presenter.js';
 
-const contentContainerView = document.querySelector('.trip-events');
-const filterContainerView = document.querySelector('.trip-controls__filters');
-const routePresenter = new RoutePresenter(contentContainerView);
+const routeModel = new RouteModel();
 
-filterContainerView.append(new FilterView());
-routePresenter.init();
+new RoutePresenter(routeModel);
+// new EditorPresenter(routeModel);

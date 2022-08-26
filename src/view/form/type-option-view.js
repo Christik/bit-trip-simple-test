@@ -1,4 +1,4 @@
-import ComponentView, { html } from './component-view.js';
+import ComponentView, { html } from '../component-view.js';
 
 export default class TypeOptionView extends ComponentView {
   constructor() {
@@ -12,7 +12,7 @@ export default class TypeOptionView extends ComponentView {
    * @param {string} label
    * @param {PointType} value
    */
-  createAdjacentHtml(label, value) {
+  createTemplate(label, value, isChecked) {
     return html`
       <input 
         id="event-type-${value}-1" 
@@ -20,12 +20,13 @@ export default class TypeOptionView extends ComponentView {
         type="radio" 
         name="event-type" 
         value="${value}"
+        ${isChecked ? 'checked' : ''}
       >
       <label 
         class="event__type-label event__type-label--${value}" 
         for="event-type-${value}-1"
       >
-        {$label}
+        ${label}
       </label>
     `;
   }

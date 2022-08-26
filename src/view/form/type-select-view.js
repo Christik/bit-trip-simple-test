@@ -1,19 +1,19 @@
-import ComponentView, {html} from './component-view.js';
+import ComponentView, {html} from '../component-view.js';
 import TypeOptionView from './type-option-view.js';
+import { getIconUrl } from '../../utils.js';
 
 export default class TypeSelectView extends ComponentView {
   constructor() {
     super(...arguments);
 
     this.classList.add('event__type-wrapper');
-
     this.addEventListener('change', this.onChange);
   }
 
   /**
    * @override
    */
-  createAdjacentHtml() {
+  createTemplate() {
     return html`
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
@@ -29,9 +29,17 @@ export default class TypeSelectView extends ComponentView {
     `;
   }
 
-  /**
-   * @param {[string, PointType][]} states
-   */
+  /** @param {PointType} type */
+  setIcon(type) {
+    /** @type {HTMLImageElement} */
+    const view = this.querySelector('.event__type-icon');
+
+    view.src = getIconUrl(type);
+
+    return this;
+  }
+
+  /** @param {[string, PointType, boolean][]} states */
   setOptions(states) {
     const views = states.map((state) => new TypeOptionView(...state));
 
@@ -41,12 +49,14 @@ export default class TypeSelectView extends ComponentView {
     return this;
   }
 
-  /**
-   * @param {PointType} type
-   */
+  /** @param {string} type */
   select(type) {
-    this.querySelector('img').src = `img/icons/${type}.png`;
-    this.querySelector(`[value="${type}"]`).checked = true;
+    /** @type {HTMLInputElement} */
+    const inputView = this.querySelector(`[value="${type}"]`);
+    const imgView = this.querySelector('img');
+
+    inputView.checked = true;
+    imgView.src = getIconUrl(type);
 
     return this.expand(false);
   }
@@ -57,9 +67,7 @@ export default class TypeSelectView extends ComponentView {
     return this;
   }
 
-  /**
-   * @param {Event & {target: HTMLInputElement}} event
-   */
+  /** @param {Event & {target: HTMLInputElement}} event */
   onChange(event) {
     const { type, value, checked } = event.target;
 

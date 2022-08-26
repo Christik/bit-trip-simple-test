@@ -596,6 +596,7 @@ main {
   margin-right: 15px; }
 
 .event__selected-offers {
+  display: block;
   width: 220px;
   padding: 0;
   margin: 0;
@@ -749,6 +750,10 @@ main {
   font-size: 23px;
   line-height: 27px; }
 
+.event__section {
+  display: block; }
+.event__section[hidden] {
+  display: none; }
 .event__section:not(:last-child) {
   margin-bottom: 28px; }
 

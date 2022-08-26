@@ -4,22 +4,17 @@ export default class ComponentView extends HTMLElement {
 
     this.insertAdjacentHTML(
       this.adjacentHtmlPosition,
-      this.createAdjacentHtml(...arguments)
+      this.createTemplate(...arguments)
     );
   }
 
-  /**
-   * Позиция дополнительной html-разметки
-   * @type {InsertPosition}
-   */
+  /** @type {InsertPosition} */
   get adjacentHtmlPosition() {
     return 'beforeend';
   }
 
-  /**
-   * @param {...*} data
-   */
-  createAdjacentHtml(...data) {
+  /** @param {...*} data */
+  createTemplate(...data) {
     return data.join('');
   }
 
@@ -43,9 +38,13 @@ export default class ComponentView extends HTMLElement {
  * @param  {...*} values
  * @return {string}
  */
-export const html = (strings, ...values) => values.reduce((result, value, index) => {
-  if (typeof value === 'function') {
-    value = `<${value}></${value}>`;
-  }
-  return result + value + strings[index + 1];
-}, strings[0]);
+export const html = (strings, ...values) => values.reduce(
+  (result, value, index) => {
+    if (typeof value === 'function') {
+      value = `<${value}></${value}>`;
+    }
+
+    return result + value + strings[index + 1];
+  },
+  strings[0]
+);

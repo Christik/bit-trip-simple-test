@@ -1,4 +1,4 @@
-import ComponentView, {html} from './component-view.js';
+import ComponentView, {html} from '../component-view.js';
 
 export default class DestinationDetailsView extends ComponentView {
   constructor() {
@@ -10,7 +10,7 @@ export default class DestinationDetailsView extends ComponentView {
   /**
    * @override
    */
-  createAdjacentHtml() {
+  createTemplate() {
     return html`
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description"></p>

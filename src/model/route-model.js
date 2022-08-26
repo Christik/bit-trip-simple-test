@@ -3,50 +3,58 @@ import { getOfferGroups } from '../fish/offerGroups.js';
 import { getDestinations } from '../fish/destinations';
 import PointAdapter from '../adapter/point-adapter.js';
 
+// TODO: проверить, чтобы везде возвращались клонированные объекты
+// Переделать геттеры в методы
+
 /**
  * @template T
  * @param {T} target
  * @return {T}
  */
-const clone = (target) =>
-  JSON.parse(JSON.stringify(target));
+const clone = (target) => JSON.parse(JSON.stringify(target));
 
-export default class RouteModel {
+export default class RouteModel extends EventTarget {
   /** @type {Point[]} */
-  #pointCache = Array.from({length: 20}, generatePoint);
+  #points = null;
 
   /** @type {Destination[]} */
-  #destinationCache = getDestinations();
+  #destinations = null;
 
   /** @type {OfferGroup[]} */
-  #offerCache = getOfferGroups();
+  #offerGroups = null;
 
-  getPoints() {
-    return this.#pointCache.map((point) => new PointAdapter(point));
+  async ready() {
+    if (this.#points) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    this.#points = Array.from({length: 20}, generatePoint);
+    this.#destinations = getDestinations();
+    this.#offerGroups = getOfferGroups();
   }
 
-  /**
-   * @param {string} id
-   */
+  getPoints() {
+    return this.#points.map((point) => new PointAdapter(point));
+  }
+
+  /** @param {string} id */
   getPointById(id) {
-    const point = this.#pointCache.find((item) => (item.id === id));
+    const point = this.#points.find((item) => (item.id === id));
 
     return new PointAdapter(point);
   }
 
-  /**
-   * Возвращает все группы оферов
-   */
   get offerGroups() {
     return getOfferGroups();
   }
 
-  /**
-   * Возвращает массив со всеми оферами указанного типа
-   * @param {PointType} type
-   */
+  /** @param {PointType} type */
   getAvailableOffers(type) {
-    return this.offerGroups.find((offerGroup) => offerGroup.type === type).offers;
+    return this.offerGroups
+      .find((offerGroup) => (offerGroup.type === type))
+      .offers;
   }
 
   /**
@@ -54,50 +62,28 @@ export default class RouteModel {
    * @param {number[]} ids
    */
   getOffers(type, ids) {
-    return this.getAvailableOffers(type).filter((item) => ids.includes(item.id));
+    return this
+      .getAvailableOffers(type)
+      .filter((item) => ids.includes(item.id));
   }
 
-  getDestinations() {
-    return clone(this.#destinationCache);
+  get destinations() {
+    return clone(this.#destinations);
   }
 
-  /**
-   * @param {number} id
-   */
+  /** @param {number} id */
   getDestinationById(id) {
-    const destination = this.#destinationCache.find((item) => item.id === id);
+    const destination = this.#destinations.find((item) => (item.id === id));
 
     return clone(destination);
   }
 
-  /**
-   * Возвращает все пункты назначения
-   */
-  get destinations() {
-    return getDestinations();
-  }
+  async updatePoint(id, data) {
+    /*
+    1. Отправить данные в хранилище
+    2. Сообщить, что точка маршрута обновлена
+    */
 
-  /**
-   * Возвращает все точки маршрута
-   */
-  get points() {
-    const points = Array.from({length: 20}, generatePoint);
-
-    return points.map((point) => {
-      /**
-       * @type {AggregatedPoint}
-       */
-      const aggregatePoint = {
-        basePrice: point['base_price'],
-        dateFrom: point['date_from'],
-        dateTo: point['date_to'],
-        id: point.id,
-        type: point.type,
-        offers: this.offerGroups.find((group) => (group.type === point.type)).offers.slice(0, 2),
-        destination: this.destinations.find((destination) => destination.id === point.destination),
-      };
-
-      return aggregatePoint;
-    });
+    this.dispatchEvent(new CustomEvent('update-point', { detail: id }));
   }
 }
