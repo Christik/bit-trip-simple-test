@@ -1,7 +1,9 @@
 import ComponentView, { html } from './component-view.js';
 
 export default class SortView extends ComponentView {
-  /** @override */
+  /**
+   * @override
+   */
   createTemplate() {
     return html`
       <form class="trip-events__trip-sort  trip-sort" action="#" method="get">

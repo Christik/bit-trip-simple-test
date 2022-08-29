@@ -5,3 +5,4 @@ export default class Mode extends Enum {
   static CREATOR = 2;
   static EDITOR = 3;
 }
+

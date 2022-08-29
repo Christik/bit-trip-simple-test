@@ -1,7 +1,9 @@
 import ComponentView, { html } from './component-view.js';
 
 export default class NewPointView extends ComponentView {
-  /** @override */
+  /**
+   * @override
+   */
   createTemplate() {
     return html`
       <form class="event event--edit" action="#" method="post">

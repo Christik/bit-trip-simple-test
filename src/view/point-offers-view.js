@@ -1,4 +1,4 @@
-import ComponentView from '../component-view.js';
+import ComponentView from './component-view.js';
 import PointOfferView from './point-offer-view.js';
 
 export default class PointOffersView extends ComponentView {
@@ -8,7 +8,9 @@ export default class PointOffersView extends ComponentView {
     this.classList.add('event__selected-offers');
   }
 
-  /** @param {[string, number][]} states */
+  /**
+   * @param {[string, number][]} states
+   */
   setOptions(states) {
     const views = states.map((state) => new PointOfferView(...state));
 

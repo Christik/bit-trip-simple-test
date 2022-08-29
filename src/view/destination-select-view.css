@@ -1,0 +1,3 @@
+.event__input--destination::placeholder {
+  color: inherit;
+}

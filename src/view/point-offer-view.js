@@ -1,4 +1,4 @@
-import ComponentView, { html } from '../component-view.js';
+import ComponentView, { html } from './component-view.js';
 
 export default class PointOfferView extends ComponentView {
   constructor() {
@@ -7,7 +7,9 @@ export default class PointOfferView extends ComponentView {
     this.classList.add('event__offer');
   }
 
-  /** @override */
+  /**
+   * @override
+   */
   createTemplate(title, price) {
     return html`
       <span class="event__offer-title">${title}</span>

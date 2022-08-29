@@ -1,3 +1,5 @@
+/** @typedef {import('./point-view').default} PointView */
+
 import ComponentView, { html } from './component-view.js';
 import SortView from './sort-view.js';
 
@@ -36,18 +38,16 @@ export default class RouteView extends ComponentView {
    */
   showPlaceholder(text) {
     this.placeholderView.textContent = text;
-
     this.sortView.replaceWith(this.placeholderView);
 
     return this;
   }
 
   /**
-   * @param {...HTMLElement} views
+   * @param {...PointView} views
    */
   setPoints(...views) {
     views.forEach((view) => view.classList.add('trip-events__item'));
-
     this.listView.replaceChildren(...views);
 
     return this;

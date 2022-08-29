@@ -7,7 +7,7 @@ export default class PointAdapter {
     this.startDate = point.date_from;
     this.endDate = point.date_to;
     this.destinationId = point.destination;
-    this.id = point.id;
+    this.id = Number(point.id);
     this.offerIds = point.offers;
     this.type = point.type;
   }
@@ -21,7 +21,7 @@ export default class PointAdapter {
       'date_from': this.startDate,
       'date_to': this.endDate,
       'destination': this.destinationId,
-      'id': this.id,
+      'id': String(this.id),
       'offers': this.offerIds,
       'type': this.type
     };

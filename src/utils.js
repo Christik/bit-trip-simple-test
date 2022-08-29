@@ -37,15 +37,17 @@ export const createCounter = () => {
   return () => ++count;
 };
 
-export const capitalizeFirstLetter = (text) => {
-  const firstLetter = text[0].toUpperCase();
-  const restText = text.slice(1);
-
-  return `${firstLetter}${restText}`;
-};
-
 export const formatDate = (date, format) => dayjs(date).format(format);
+
+export const isDateAfterNow = (date) => dayjs(date).isAfter(dayjs());
 
 export const isKeyEscape = (event) => (event.key === 'Escape' || event.key === 'Esc');
 
 export const getIconUrl = (name) => `img/icons/${name}.png`;
+
+export const getOfferSelectOptions = (availableOffers, offerIds = []) =>
+  availableOffers.map((offer) => {
+    const isChecked = (offerIds.includes(offer.id));
+
+    return [offer.id, offer.title, offer.price, isChecked];
+  });

@@ -1,10 +1,15 @@
-import ComponentView, {html} from '../component-view.js';
+import ComponentView, {html} from './component-view.js';
 
 export default class DestinationDetailsView extends ComponentView {
   constructor() {
     super(...arguments);
 
     this.classList.add('event__section', 'event__section--destination');
+
+    this.photoContainerView = this.querySelector('.event__photos-container');
+    this.photoListView = this.querySelector('.event__photos-tape');
+
+    this.photoContainerView.remove();
   }
 
   /**
@@ -17,7 +22,7 @@ export default class DestinationDetailsView extends ComponentView {
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          <!--<img class="event__photo" src="img/photos/1.jpg" alt="Event photo">-->
+          <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
          </div>
       </div>
     `;
@@ -37,7 +42,8 @@ export default class DestinationDetailsView extends ComponentView {
       Object.assign(new Image(), { src, alt, className: 'event__photo' })
     );
 
-    this.querySelector('.event__photos-tape').replaceChildren(...views);
+    this.photoListView.replaceChildren(...views);
+    this.append(this.photoContainerView);
 
     return this;
   }

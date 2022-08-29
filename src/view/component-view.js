@@ -8,12 +8,16 @@ export default class ComponentView extends HTMLElement {
     );
   }
 
-  /** @type {InsertPosition} */
+  /**
+   * @type {InsertPosition}
+   */
   get adjacentHtmlPosition() {
     return 'beforeend';
   }
 
-  /** @param {...*} data */
+  /**
+   * @param {...*} data
+   */
   createTemplate(...data) {
     return data.join('');
   }

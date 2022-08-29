@@ -1,9 +1,9 @@
+import Type from '../enum/type.js';
 import {
   getRandomInteger,
   getRandomArrayElement,
   createRandomizerOfUniqueInteger,
   createCounter } from '../utils.js';
-import Type from '../enum/type.js';
 import { getOfferGroups } from './offerGroups.js';
 import { getDestinations } from './destinations.js';
 import dayjs from 'dayjs';
