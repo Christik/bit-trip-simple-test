@@ -1,13 +1,13 @@
 /** @typedef {import('./point-view').default} PointView */
 
-import ComponentView, { html } from './component-view.js';
+import ComponentView from './component-view.js';
 import TypeSelectView from './type-select-view.js';
-import DestinationInputView from './destination-select-view.js';
+import DestinationSelectView from './destination-select-view.js';
 import OfferSelectView from './offer-select-view.js';
 import DestinationDetailsView from './destination-details-view.js';
 import PriceInputView from './price-input-view.js';
 import DatePickerView from './date-picker-view.js';
-import { isKeyEscape } from '../utils.js';
+import { html, isKeyEscape } from '../utils.js';
 
 export default class EditorView extends ComponentView {
   #linked = null;
@@ -20,7 +20,6 @@ export default class EditorView extends ComponentView {
     this.bodyView = this.querySelector('.event__details');
     this.offersContainerView = this.querySelector('.event__section--offers');
     this.offerListView = this.querySelector('.event__available-offers');
-    this.expandButtonView = this.querySelector('.event__rollup-btn');
 
     /**
      * @type {TypeSelectView}
@@ -28,9 +27,9 @@ export default class EditorView extends ComponentView {
     this.typeSelectView = this.querySelector(String(TypeSelectView));
 
     /**
-     * @type {DestinationInputView}
+     * @type {DestinationSelectView}
      */
-    this.destinationInputView = this.querySelector(String(DestinationInputView));
+    this.destinationSelectView = this.querySelector(String(DestinationSelectView));
 
     /**
      * @type {PriceInputView}
@@ -52,9 +51,7 @@ export default class EditorView extends ComponentView {
      */
     this.destinationDetailsView = this.querySelector(String(DestinationDetailsView));
 
-    this.expandButtonView.addEventListener('click', () => {
-      this.close();
-    });
+    this.addEventListener('click', this.onClick);
   }
 
   /**
@@ -65,7 +62,7 @@ export default class EditorView extends ComponentView {
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           ${TypeSelectView}
-          ${DestinationInputView}
+          ${DestinationSelectView}
           ${DatePickerView}
           ${PriceInputView}
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -93,21 +90,34 @@ export default class EditorView extends ComponentView {
 
   open() {
     this.#linked.replaceWith(this);
-    document.addEventListener('keydown', this);
+    document.addEventListener('keydown', this.onDocumentKeydown);
 
     return this;
   }
 
   close() {
     this.replaceWith(this.#linked);
-    document.removeEventListener('keydown', this);
+    document.removeEventListener('keydown', this.onDocumentKeydown);
 
     return this;
   }
 
-  handleEvent(event) {
-    if (isKeyEscape(event)) {
+  onClick(event) {
+    if (event.target.closest('.event__rollup-btn')) {
       this.close();
+    }
+  }
+
+  /**
+   * @this {Document}
+   * @param {KeyboardEvent} event
+   */
+  onDocumentKeydown(event) {
+    if (isKeyEscape(event)) {
+      /** @type {EditorView} */
+      const editorView = this.querySelector(String(EditorView));
+
+      editorView.close();
     }
   }
 }

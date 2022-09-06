@@ -36,19 +36,3 @@ export default class ComponentView extends HTMLElement {
     return this.tagName;
   }
 }
-
-/**
- * @param {TemplateStringsArray} strings
- * @param  {...*} values
- * @return {string}
- */
-export const html = (strings, ...values) => values.reduce(
-  (result, value, index) => {
-    if (typeof value === 'function') {
-      value = `<${value}></${value}>`;
-    }
-
-    return result + value + strings[index + 1];
-  },
-  strings[0]
-);

@@ -1,62 +1,61 @@
-import ComponentView, { html } from './component-view.js';
-import PointOffersView from './point-offers-view.js';
-import { getIconUrl } from '../utils.js';
+import ListItemView from './list-item-view.js';
+import OfferView from './offer-view.js';
+import { html, getIconUrl } from '../utils.js';
 
-export default class PointView extends ComponentView {
-  #id;
+/** @typedef {import('./offer-view').State} OfferState */
+
+/**
+ * @typedef PointState
+ * @prop {number} id
+ * @prop {string} startIsoDate
+ * @prop {string} endIsoDate
+ * @prop {string} startDate
+ * @prop {string} title
+ * @prop {string} icon
+ * @prop {string} startTime
+ * @prop {string} endTime
+ * @prop {string} price
+ * @prop {OfferState[]} offers
+ */
+
+export default class PointView extends ListItemView {
+  #id = null;
 
   /**
-   * @param {number} id
+   * @param {PointState} state
    */
-  constructor(id) {
-    super();
+  constructor(state) {
+    super(state);
 
-    this.#id = id;
+    this.#id = state.id;
 
-    /**
-     * @type {PointOffersView}
-     */
-    this.pointOffersView = this.querySelector(String(PointOffersView));
-
-    this.addEventListener('click', this.onClick);
-  }
-
-  onClick(event) {
-    if (!event.target.closest('.event__rollup-btn')) {
-      return;
-    }
-
-    this.dispatchEvent(
-      new CustomEvent('point-edit', {
-        detail: this.#id,
-        bubbles: true
-      })
-    );
+    this.setOffers(state.offers).addEventListener('click', this.onClick);
   }
 
   /**
    * @override
    */
-  createTemplate() {
+  createTemplate(state) {
     return html`
       <div class="event">
-        <time class="event__date" datetime="2000-01-01">DEC 00</time>
+        <time class="event__date" datetime="${state.startIsoDate}">${state.startDate}</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/name.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${state.icon}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">Type City</h3>
+        <h3 class="event__title">${state.title}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2000-01-01T00:00">00:00</time>
+            <time class="event__start-time" datetime="${state.startIsoDate}">${state.startTime}</time>
             &mdash;
-            <time class="event__end-time" datetime="2000-01-01T00:00">00:00</time>
+            <time class="event__end-time" datetime="${state.endIsoDate}">${state.endTime}</time>
           </p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">0</span>
+          &euro;&nbsp;<span class="event__price-value">${state.price}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        ${PointOffersView}
+        <div class="event__selected-offers">
+        </div>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -146,6 +145,32 @@ export default class PointView extends ComponentView {
     view.textContent = price;
 
     return this;
+  }
+
+  /**
+   * @param {OfferState[]} states
+   */
+  setOffers(states) {
+    const views = states.map((state) => new OfferView(...state));
+
+    this.querySelector('.event__selected-offers').replaceChildren(...views);
+
+    return this;
+  }
+
+  onClick(event) {
+    if (!event.target.closest('.event__rollup-btn')) {
+      return;
+    }
+
+    event.preventDefault();
+
+    this.dispatchEvent(
+      new CustomEvent('point-edit', {
+        detail: this.#id,
+        bubbles: true,
+      })
+    );
   }
 }
 

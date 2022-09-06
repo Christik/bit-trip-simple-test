@@ -1,4 +1,5 @@
-import ComponentView, { html } from './component-view.js';
+import ComponentView from './component-view.js';
+import { html } from '../utils.js';
 
 export default class TypeOptionView extends ComponentView {
   constructor() {
@@ -11,9 +12,8 @@ export default class TypeOptionView extends ComponentView {
    * @override
    * @param {string} label
    * @param {PointType} value
-   * @param {boolean} isChecked
    */
-  createTemplate(label, value, isChecked) {
+  createTemplate(label, value) {
     return html`
       <input
         id="event-type-${value}-1"
@@ -21,7 +21,6 @@ export default class TypeOptionView extends ComponentView {
         type="radio"
         name="event-type"
         value="${value}"
-        ${isChecked ? 'checked' : ''}
       >
       <label
         class="event__type-label event__type-label--${value}"

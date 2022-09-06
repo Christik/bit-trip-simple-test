@@ -1,16 +1,17 @@
-import ComponentView, { html } from './component-view.js';
+import RadioGroupView from './radio-group-view.js';
 import FilterOptionView from './filter-option-view.js';
+import { html } from '../utils.js';
 
-export default class FilterSelectView extends ComponentView {
+export default class FilterSelectView extends RadioGroupView {
   /**
    * @override
    */
   createTemplate() {
     return html`
-      <form class="trip-filters" action="#" method="get">
-        <button class="visually-hidden" type="submit">Accept filter</button>
-      </form>
-    `;
+    <form class="trip-filters" action="#" method="get">
+      <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>
+  `;
   }
 
   /**
@@ -19,34 +20,7 @@ export default class FilterSelectView extends ComponentView {
   setOptions(states) {
     const views = states.map((state) => new FilterOptionView(...state));
 
-    this.prepend(...views);
-
-    return this;
-  }
-
-  /**
-   * @param {boolean[]} flags
-   */
-  setOptionsDisabled(flags) {
-    const views = this.querySelectorAll('input');
-
-    flags.forEach((flag, index) => {
-      views[index].checked = flag;
-    });
-
-    return this;
-  }
-
-  /**
-   * @param {string} filterType
-   */
-  select(filterType) {
-    /**
-     * @type {HTMLInputElement}
-     */
-    const inputView = this.querySelector(`[value="${filterType}"]`);
-
-    inputView.checked = true;
+    this.querySelector('.trip-filters').prepend(...views);
 
     return this;
   }

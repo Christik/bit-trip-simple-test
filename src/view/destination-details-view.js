@@ -1,4 +1,5 @@
-import ComponentView, {html} from './component-view.js';
+import ComponentView from './component-view.js';
+import { html } from '../utils.js';
 
 export default class DestinationDetailsView extends ComponentView {
   constructor() {

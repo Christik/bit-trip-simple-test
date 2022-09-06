@@ -1,11 +1,14 @@
-import ComponentView, {html} from './component-view.js';
+import ComponentView from './component-view.js';
 import OfferOptionView from './offer-option-view';
+import { html } from '../utils.js';
 
 export default class OfferSelectView extends ComponentView {
   constructor() {
     super(...arguments);
 
     this.classList.add('event__section', 'event__section--offers');
+
+    this.offersView = this.querySelector('.event__available-offers');
   }
 
   /**
@@ -19,7 +22,7 @@ export default class OfferSelectView extends ComponentView {
   }
 
   /**
-   * @param {[number, string, number, boolean][]} states
+   * @param {[number, string, number][]} states
    */
   setOptions(states) {
     const areOffersEmpty = (states.length === 0);
@@ -32,7 +35,18 @@ export default class OfferSelectView extends ComponentView {
     }
 
     this.hidden = false;
-    this.querySelector('.event__available-offers').replaceChildren(...views);
+    this.offersView.replaceChildren(...views);
+
+    return this;
+  }
+
+  /**
+   * @param {boolean[]} flags
+   */
+  setOptionsChecked(flags) {
+    const inputViews = this.querySelectorAll('input');
+
+    flags.forEach((flag, index) => (inputViews[index].checked = flag));
 
     return this;
   }

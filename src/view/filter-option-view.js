@@ -1,12 +1,11 @@
-import ComponentView, {html} from './component-view.js';
+import ComponentView from './component-view.js';
+import { html } from '../utils.js';
 
 export default class FilterOptionView extends ComponentView {
   constructor() {
     super(...arguments);
 
     this.classList.add('trip-filters__filter');
-
-    this.inputView = this.querySelector('.trip-filters__filter-input');
   }
 
   /**
@@ -29,7 +28,7 @@ export default class FilterOptionView extends ComponentView {
       >
         ${label}
       </label>
-  `;
+    `;
   }
 }
 

@@ -1,18 +1,14 @@
 import './destination-select-view.css';
-import ComponentView, {html} from './component-view.js';
+import ComponentView from './component-view.js';
+import { html } from '../utils.js';
 
-export default class DestinationInputView extends ComponentView {
+export default class DestinationSelectView extends ComponentView {
   #options = null;
 
   constructor() {
     super(...arguments);
 
     this.classList.add('event__field-group', 'event__field-group--destination');
-
-    this.addEventListener('focus', this.onFocus, true);
-    this.addEventListener('change', this.onChange);
-    this.addEventListener('keydown', this.onKeydown);
-    this.addEventListener('blur', this.onBlur);
 
     /** @type {HTMLLabelElement} */
     this.labelView = this.querySelector('.event__type-output');
@@ -22,6 +18,11 @@ export default class DestinationInputView extends ComponentView {
 
     /** @type {HTMLDataListElement} */
     this.datalistView = this.querySelector('datalist');
+
+    this.addEventListener('focus', this.onFocus, true);
+    this.addEventListener('change', this.onChange);
+    this.addEventListener('keydown', this.onKeydown);
+    this.addEventListener('blur', this.onBlur);
   }
 
   /**
@@ -85,14 +86,14 @@ export default class DestinationInputView extends ComponentView {
     return this;
   }
 
-  moveValueToPlaceholder() {
+  replaceValueWithPlaceholder() {
     const { inputView } = this;
 
     inputView.placeholder = inputView.value;
     inputView.value = '';
   }
 
-  movePlaceholderToValue() {
+  replacePlaceholderWithValue() {
     const { inputView } = this;
 
     inputView.value = inputView.placeholder;
@@ -100,12 +101,11 @@ export default class DestinationInputView extends ComponentView {
   }
 
   onFocus() {
-    this.moveValueToPlaceholder();
+    this.replaceValueWithPlaceholder();
   }
 
   onChange() {
-    this.moveValueToPlaceholder();
-    this.dispatchEvent(new CustomEvent('destination-change'));
+    this.replaceValueWithPlaceholder();
   }
 
   onKeydown(event) {
@@ -115,8 +115,8 @@ export default class DestinationInputView extends ComponentView {
   }
 
   onBlur() {
-    this.movePlaceholderToValue();
+    this.replacePlaceholderWithValue();
   }
 }
 
-customElements.define(String(DestinationInputView), DestinationInputView);
+customElements.define(String(DestinationSelectView), DestinationSelectView);
