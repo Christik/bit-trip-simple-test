@@ -13,6 +13,4 @@ export default class FilterPredicate extends Enum {
    * @type {PointPredicate}
    */
   static FUTURE = (point) => Date.parse(point.endDate) > Date.now();
-
-  static NONE = () => false;
 }

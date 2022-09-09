@@ -1,6 +1,6 @@
-import RadioGroupView from './radio-group-view.js';
+import RadioGroupView, {html} from './radio-group-view.js';
 import TypeOptionView from './type-option-view.js';
-import { html, getIconUrl } from '../utils.js';
+import {getIconUrl} from '../utils.js';
 
 export default class TypeSelectView extends RadioGroupView {
   constructor() {

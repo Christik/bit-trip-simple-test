@@ -1,54 +1,50 @@
-/** @typedef {import('./point-view').default} PointView */
-
-import ComponentView from './component-view.js';
+import ListItemView, {html} from './list-item-view.js';
 import TypeSelectView from './type-select-view.js';
 import DestinationSelectView from './destination-select-view.js';
+import DatePickerView from './date-picker-view.js';
+import PriceInputView from './price-input-view.js';
 import OfferSelectView from './offer-select-view.js';
 import DestinationDetailsView from './destination-details-view.js';
-import PriceInputView from './price-input-view.js';
-import DatePickerView from './date-picker-view.js';
-import { html, isKeyEscape } from '../utils.js';
+import {isKeyEscape} from '../utils.js';
+import Mode from '../enum/mode.js';
 
-export default class EditorView extends ComponentView {
-  #linked = null;
+const RemovingMode = {
+  ACTIVE: 'Deleting...',
+  INACTIVE: 'Delete'
+};
+
+export default class EditorView extends ListItemView {
+  #linked;
 
   constructor() {
     super();
 
-    this.classList.add('trip-events__item');
+    this.removeSelector = '.event__reset-btn';
+    this.closeSelector = '.event__rollup-btn';
 
     this.bodyView = this.querySelector('.event__details');
     this.offersContainerView = this.querySelector('.event__section--offers');
     this.offerListView = this.querySelector('.event__available-offers');
 
-    /**
-     * @type {TypeSelectView}
-     */
+    /** @type {HTMLButtonElement} */
+    this.removeView = this.querySelector(this.removeSelector);
+
+    /** @type {TypeSelectView} */
     this.typeSelectView = this.querySelector(String(TypeSelectView));
 
-    /**
-     * @type {DestinationSelectView}
-     */
+    /** @type {DestinationSelectView} */
     this.destinationSelectView = this.querySelector(String(DestinationSelectView));
 
-    /**
-     * @type {PriceInputView}
-     */
+    /** @type {PriceInputView} */
     this.priceInputView = this.querySelector(String(PriceInputView));
 
-    /**
-     * @type {DatePickerView}
-     */
+    /** @type {DatePickerView} */
     this.datePickerView = this.querySelector(String(DatePickerView));
 
-    /**
-     * @type {OfferSelectView}
-     */
+    /** @type {OfferSelectView} */
     this.offerSelectView = this.querySelector(String(OfferSelectView));
 
-    /**
-     * @type {DestinationDetailsView}
-     */
+    /** @type {DestinationDetailsView} */
     this.destinationDetailsView = this.querySelector(String(DestinationDetailsView));
 
     this.addEventListener('click', this.onClick);
@@ -90,34 +86,48 @@ export default class EditorView extends ComponentView {
 
   open() {
     this.#linked.replaceWith(this);
-    document.addEventListener('keydown', this.onDocumentKeydown);
+    document.addEventListener('keydown', this);
 
     return this;
   }
 
-  close() {
+  close(silent = false) {
     this.replaceWith(this.#linked);
-    document.removeEventListener('keydown', this.onDocumentKeydown);
+    document.removeEventListener('keydown', this);
+
+    if (!silent) {
+      this.dispatchEvent(new CustomEvent('close'));
+    }
 
     return this;
+  }
+
+  reset() {
+    this.querySelector('form').reset();
+  }
+
+  setRemovingMode() {
+    this.removeView.textContent = RemovingMode.ACTIVE;
+    this.removeView.disabled = true;
+  }
+
+  unsetRemovingMode() {
+    this.removeView.textContent = RemovingMode.INACTIVE;
+    this.removeView.disabled = false;
   }
 
   onClick(event) {
-    if (event.target.closest('.event__rollup-btn')) {
+    if (event.target.closest(this.closeSelector)) {
       this.close();
     }
   }
 
   /**
-   * @this {Document}
    * @param {KeyboardEvent} event
    */
-  onDocumentKeydown(event) {
+  handleEvent(event) {
     if (isKeyEscape(event)) {
-      /** @type {EditorView} */
-      const editorView = this.querySelector(String(EditorView));
-
-      editorView.close();
+      this.close();
     }
   }
 }

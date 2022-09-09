@@ -1,36 +1,53 @@
-/** @typedef {import('../model/route-model').default} RouteModel */
-
+import Filter from '../enum/filter.js';
 import FilterLabel from '../enum/filter-label.js';
 import FilterDisabled from '../enum/filter-disabled.js';
-import Filter from '../enum/filter.js';
-import FilterSelectView from '../view/filter-select-view.js';
+import FilterPredicate from '../enum/filter-predicate.js';
+import Presenter from './presenter.js';
 
-export default class FilterPresenter {
+/**
+ * @template {ApplicationModel} Model
+ * @template {FilterSelectView} View
+ * @extends Presenter<Model,View>
+ */
+export default class FilterPresenter extends Presenter {
   /**
-   * @param {RouteModel} model
+   * @param {[model: Model, view: View]} args
    */
-  constructor(model) {
-    this.model = model;
-
-    const filterContainerView = document.querySelector('.trip-controls__filters');
-    const points = this.model.getPoints();
+  constructor(...args) {
+    super(...args);
 
     /** @type {[string, string][]} */
     const options = Object.keys(Filter).map(
       (key) => [FilterLabel[key], Filter[key]]
     );
 
-    /** @type {boolean[]} */
-    const optionsDisabled = Object.keys(Filter).map(
-      (key) => FilterDisabled[key](points)
-    );
-
-    this.view = new FilterSelectView();
     this.view
       .setOptions(options)
-      .setOptionsDisabled(optionsDisabled)
-      .setValue(Filter.EVERYTHING);
+      .setOptionsDisabled(this.getOptionsDisabled())
+      .setValue(Filter.EVERYTHING)
+      .addEventListener('change', this.onChange.bind(this));
 
-    filterContainerView.append(this.view);
+    this.model.addEventListener(['view', 'edit', 'create'], (event) => {
+      const flags = this.getOptionsDisabled();
+
+      if (event.type !== 'view') {
+        flags.fill(true);
+      }
+
+      this.view.setOptionsDisabled(flags);
+    });
+  }
+
+  getOptionsDisabled() {
+    return Object.values(FilterPredicate).map((predicate) =>
+      !this.model.points.list(predicate).length
+    );
+  }
+
+  onChange() {
+    const value = this.view.getValue();
+    const predicate = FilterPredicate[Filter.findKey(value)];
+
+    this.model.points.setFilter(predicate);
   }
 }

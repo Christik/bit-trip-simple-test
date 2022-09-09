@@ -1,5 +1,4 @@
-import ComponentView from './component-view.js';
-import { html } from '../utils.js';
+import ComponentView, {html} from './component-view.js';
 
 export default class NewPointView extends ComponentView {
   /**

@@ -1,4 +1,4 @@
-import StoreError from './store-error.js';
+import StoreError from './store-error';
 
 /** @typedef {string | number} ItemId */
 
@@ -6,8 +6,8 @@ import StoreError from './store-error.js';
  * @template Item
  */
 export default class Store {
-  #baseUrl = null;
-  #auth = null;
+  #baseUrl;
+  #auth;
 
   /**
    * @param {string} baseUrl
@@ -34,6 +34,11 @@ export default class Store {
       if (!response.ok) {
         throw new StoreError(response);
       }
+
+      if (response.headers.get('content-type').startsWith('text/plain')) {
+        return response.text();
+      }
+
       return response.json();
     });
   }

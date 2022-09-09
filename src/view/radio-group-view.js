@@ -1,5 +1,7 @@
 import ComponentView from './component-view.js';
 
+export * from './component-view.js';
+
 export default class RadioGroupView extends ComponentView {
   get inputSelector() {
     return '[type="radio"]';
@@ -27,11 +29,14 @@ export default class RadioGroupView extends ComponentView {
     return this;
   }
 
+  /**
+   * @param {boolean[]} flags
+   */
   setOptionsDisabled(flags) {
     /** @type {NodeListOf<HTMLInputElement>} */
     const views = this.querySelectorAll(this.inputSelector);
 
-    views.forEach((view, index) => (view.disabled = flags[index ]));
+    views.forEach((view, index) => (view.disabled = flags[index]));
 
     return this;
   }

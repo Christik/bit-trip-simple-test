@@ -25,7 +25,8 @@
           <div class="trip-main__trip-controls  trip-controls">
             <div class="trip-controls__filters">
               <h2 class="visually-hidden">Filter events</h2>
-              <!-- Фильтры -->
+
+              <trip-filter-select></trip-filter-select>
             </div>
           </div>
 
@@ -35,8 +36,13 @@
     </header>
     <main class="page-body__page-main  page-main">
       <div class="page-body__container">
-        <trip-point-list></trip-point-list>
-        <!-- <trip-route></trip-route> -->
+        <section class="trip-events">
+          <h2 class="visually-hidden">Trip events</h2>
+
+          <trip-sort-select></trip-sort-select>
+
+          <p class="trip-events__msg">Loading...</p>
+        </section>
       </div>
     </div>
     </main>

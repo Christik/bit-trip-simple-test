@@ -1,11 +1,7 @@
+import './list-item-view.css';
 import ComponentView from './component-view.js';
 
-/*
-PointCreatorView extends ListItemView
-PointEditorView extends PointCreatorView
-PointView extends ListItemView
-PointListView extends ListView
-*/
+export * from './component-view.js';
 
 export default class ListItemView extends ComponentView {
   constructor() {

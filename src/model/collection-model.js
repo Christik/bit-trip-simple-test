@@ -89,5 +89,15 @@ export default class CollectionModel extends Model {
     this.dispatchEvent(new CustomEvent('update'));
   }
 
-  remove() {}
+  /**
+   * @param {ItemId} id
+   */
+  async remove(id) {
+    const index = this.findIndexById(id);
+
+    await this.#store.remove(id);
+    this.#items.splice(index, 1);
+
+    this.dispatchEvent(new CustomEvent('remove'));
+  }
 }

@@ -1,17 +1,22 @@
 import 'flatpickr/dist/flatpickr.min.css';
 
-import flatpickr from 'flatpickr';
-import ComponentView from './component-view.js';
-import { html } from '../utils.js';
+import initCalendar from 'flatpickr';
+import ComponentView, {html} from './component-view.js';
+
+/** @typedef {import('flatpickr/dist/types/instance').Instance} Calendar */
+/** @typedef {import('flatpickr/dist/types/options').DateOption} CalendarDate */
+/** @typedef {import('flatpickr/dist/types/options').Options} CalendarOptions */
 
 const DATE_FORMAT = 'd/m/y H:i';
+
+// TODO: вынести логику в презентер
 
 export default class DatePickerView extends ComponentView {
   #startInputSelector = '[name="event-start-time"]';
   #endInputSelector = '[name="event-end-time"]';
 
-  #startFlatpickr = null;
-  #endFlatpickr = null;
+  #startDateCalendar;
+  #endDateCalendar;
 
   constructor() {
     super(...arguments);
@@ -66,37 +71,46 @@ export default class DatePickerView extends ComponentView {
       'onChange': changeDate,
     };
 
-    this.#startFlatpickr = flatpickr(
+    this.#startDateCalendar = initCalendar(
       this.querySelector(this.#startInputSelector),
       options
     );
 
-    this.#endFlatpickr = flatpickr(
+    this.#endDateCalendar = initCalendar(
       this.querySelector(this.#endInputSelector),
       options
     );
   }
 
   #updateStartDate() {
-    const [date] = this.#startFlatpickr.selectedDates;
-    this.#endFlatpickr.set('minDate', date);
+    const [date] = this.#startDateCalendar.selectedDates;
+    this.#endDateCalendar.set('minDate', date);
   }
 
   #updateEndDate() {
-    const [date] = this.#endFlatpickr.selectedDates;
-    this.#startFlatpickr.set('maxDate', date);
+    const [date] = this.#endDateCalendar.selectedDates;
+    this.#startDateCalendar.set('maxDate', date);
+  }
+
+  getStartDate() {
+    return this.#startDateCalendar.selectedDates[0];
   }
 
   /**
-   * @param {string} value
+   * @param {CalendarDate} value
+   * @param {CalendarOptions} options
    */
-  setStartDate(value) {
+  setStartDate(value, options = {}) {
     const date = new Date(value);
 
-    this.#startFlatpickr.setDate(date);
-    this.#updateStartDate();
+    this.#startDateCalendar.set(options);
+    this.#startDateCalendar.setDate(date);
 
     return this;
+  }
+
+  getEndDate() {
+    return this.#endDateCalendar.selectedDates[0];
   }
 
   /**
@@ -105,7 +119,7 @@ export default class DatePickerView extends ComponentView {
   setEndDate(value) {
     const date = new Date(value);
 
-    this.#endFlatpickr.setDate(date);
+    this.#endDateCalendar.setDate(date);
     this.#updateEndDate();
 
     return this;

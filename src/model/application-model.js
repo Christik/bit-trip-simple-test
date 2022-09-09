@@ -1,6 +1,12 @@
+import Mode from '../enum/mode.js';
 import Model from './model.js';
 
 export default class ApplicationModel extends Model {
+  /**
+   * @type {number}
+   */
+  #mode;
+
   /**
    * @param {DataTableModel<Point,PointAdapter>} points
    * @param {CollectionModel<Destination,DestinationAdapter>} destinations
@@ -10,6 +16,7 @@ export default class ApplicationModel extends Model {
     super();
 
     this.points = points;
+    this.editablePoint = null;
     this.destinations = destinations;
     this.offerGroups = offerGroups;
   }
@@ -20,5 +27,22 @@ export default class ApplicationModel extends Model {
       this.destinations.ready(),
       this.offerGroups.ready()
     ]);
+  }
+
+  getMode() {
+    return this.#mode;
+  }
+
+  /**
+   * @param {number} mode
+   * @param {number} editablePointId
+   */
+  setMode(mode, editablePointId = null) {
+    const eventType = Mode.findKey(mode).toLowerCase();
+
+    this.#mode = mode;
+    this.editablePoint = this.points.findById(editablePointId);
+
+    this.dispatchEvent(new CustomEvent(eventType));
   }
 }

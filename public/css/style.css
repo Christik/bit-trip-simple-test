@@ -307,7 +307,6 @@ main {
     cursor: default; }
 
 .trip-events {
-  display: block;
   padding-top: 22px; }
   .trip-events--hidden {
     display: none; }
@@ -332,7 +331,6 @@ main {
   list-style: none; }
 
 .trip-events__item {
-  display: block;
   margin-bottom: 54px;
   margin-left: auto; }
 
@@ -491,8 +489,6 @@ main {
   border: none; }
   .event__type-group:not(:last-of-type) {
     border-bottom: 1px solid rgba(151, 151, 151, 0.33); }
-.event__type-item {
-  display: block; }
 
 .event__type-item:not(:last-child) {
   margin-bottom: 5px; }
@@ -596,7 +592,6 @@ main {
   margin-right: 15px; }
 
 .event__selected-offers {
-  display: block;
   width: 220px;
   padding: 0;
   margin: 0;
@@ -750,10 +745,6 @@ main {
   font-size: 23px;
   line-height: 27px; }
 
-.event__section {
-  display: block; }
-.event__section[hidden] {
-  display: none; }
 .event__section:not(:last-child) {
   margin-bottom: 28px; }
 
@@ -781,14 +772,10 @@ main {
       flex-wrap: wrap;
   margin-bottom: -6px; }
 
-.event__offer {
-  display: block; }
-
 .event__offer::first-letter {
   text-transform: capitalize; }
 
 .event__offer-selector {
-  display: block;
   margin-bottom: 6px; }
   .event__offer-selector:not(:last-of-type) {
     margin-right: 6px; }

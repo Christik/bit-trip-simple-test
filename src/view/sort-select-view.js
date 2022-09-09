@@ -1,6 +1,5 @@
-import RadioGroupView from './radio-group-view.js';
+import RadioGroupView, {html} from './radio-group-view.js';
 import SortOptionView from './sort-option-view.js';
-import { html } from '../utils.js';
 
 export default class SortSelectView extends RadioGroupView {
   /**

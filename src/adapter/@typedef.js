@@ -29,19 +29,6 @@
  */
 
 /**
- * @typedef OfferGroup
- * @prop {PointType} type
- * @prop {Offer[]} offers
- */
-
-/**
- * @typedef Offer
- * @prop {number} id
- * @prop {string} title
- * @prop {number} price
- */
-
-/**
  * @typedef Destination
  * @prop {number} id
  * @prop {string} description
@@ -53,4 +40,17 @@
  * @typedef Picture
  * @prop {string} src
  * @prop {string} description
+ */
+
+/**
+ * @typedef OfferGroup
+ * @prop {PointType} type
+ * @prop {Offer[]} offers
+ */
+
+/**
+ * @typedef Offer
+ * @prop {number} id
+ * @prop {string} title
+ * @prop {number} price
  */

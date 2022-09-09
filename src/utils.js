@@ -42,19 +42,3 @@ export const formatDate = (date, format) => dayjs(date).format(format);
 export const isKeyEscape = (event) => (event.key === 'Escape' || event.key === 'Esc');
 
 export const getIconUrl = (name) => `img/icons/${name}.png`;
-
-/**
- * @param {TemplateStringsArray} strings
- * @param  {...*} values
- * @return {string}
- */
-export const html = (strings, ...values) => values.reduce(
-  (result, value, index) => {
-    if (typeof value === 'function') {
-      value = `<${value}></${value}>`;
-    }
-
-    return result + value + strings[index + 1];
-  },
-  strings[0]
-);
