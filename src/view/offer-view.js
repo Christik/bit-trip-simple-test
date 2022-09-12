@@ -1,8 +1,8 @@
 /** @typedef {[title: string, price: number]} State */
 
-import ComponentView, {html} from './component-view.js';
+import View, {html} from './view.js';
 
-export default class OfferView extends ComponentView {
+export default class OfferView extends View {
   /**
    * @param  {State} state
    */

@@ -1,6 +1,6 @@
 import Enum from './enum.js';
 
-export default class Type extends Enum {
+export default class PointType extends Enum {
   static TAXI = 'taxi';
   static BUS = 'bus';
   static TRAIN = 'train';

@@ -1,6 +1,6 @@
-import ComponentView, {html} from './component-view.js';
+import View, {html} from './view.js';
 
-export default class NewPointView extends ComponentView {
+export default class NewPointView extends View {
   /**
    * @override
    */

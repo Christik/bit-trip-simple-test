@@ -1,6 +1,6 @@
 import Enum from './enum.js';
 
-export default class TypeLabel extends Enum {
+export default class PointLabel extends Enum {
   static TAXI = 'Taxi';
   static BUS = 'Bus';
   static TRAIN = 'Train';

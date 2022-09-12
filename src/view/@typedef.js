@@ -1,7 +1,31 @@
-/** @typedef {import('./filter-select-view').default} FilterSelectView */
-/** @typedef {import('./sort-select-view').default} SortSelectView */
+/** @typedef {import('flatpickr/dist/types/instance').Instance} Calendar */
+/** @typedef {import('flatpickr/dist/types/options').DateOption} CalendarDate */
+/** @typedef {import('flatpickr/dist/types/options').Options} CalendarOptions */
+
+/** @typedef {import('./filter-view').default} FilterView */
+/** @typedef {import('./sort-view').default} SortView */
 /** @typedef {import('./point-view').default} PointView */
 /** @typedef {import('./editor-view').default} EditorView */
-/** @typedef {import('./point-list-view').default} PointListView */
+/** @typedef {import('./list-view').default} ListView */
 /** @typedef {import('./offer-view').State} OfferState */
-/** @typedef {import('./point-view').PointState} PointState  */
+
+/**
+ * @typedef PointState
+ * @prop {number} id
+ * @prop {string} startIsoDate
+ * @prop {string} endIsoDate
+ * @prop {string} startDate
+ * @prop {string} title
+ * @prop {string} icon
+ * @prop {string} startTime
+ * @prop {string} endTime
+ * @prop {string} price
+ * @prop {OfferState[]} offers
+ */
+
+/** @typedef {CustomEvent<PointerEventData>} PointEvent */
+
+/**
+ * @typedef PointerEventData
+ * @prop {number} id
+ */

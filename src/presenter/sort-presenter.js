@@ -1,15 +1,15 @@
-import Sort from '../enum/sort.js';
+import SortType from '../enum/sort-type.js';
 import SortLabel from '../enum/sort-label.js';
 import SortDisabled from '../enum/sort-disabled.js';
 import Presenter from './presenter.js';
 import SortPredicate from '../enum/sort-predicate.js';
 
-const SORT_DEFAULT = Sort.DAY;
+const SORT_DEFAULT = SortType.DAY;
 
 /**
  * @template {ApplicationModel} Model
- * @template {SortSelectView} View
- * @extends Presenter<Model,View>
+ * @template {SortView} View
+ * @extends {Presenter<Model,View>}
  */
 export default class SortPresenter extends Presenter {
   /**
@@ -19,14 +19,14 @@ export default class SortPresenter extends Presenter {
     super(...args);
 
     /** @type {[string, string][]} */
-    const options = Object.keys(Sort).map((key) => [SortLabel[key], Sort[key]]);
+    const options = Object.keys(SortType).map((key) => [SortLabel[key], SortType[key]]);
 
     const optionsDisabled = Object.values(SortDisabled);
 
     this.view
       .setOptions(options)
       .setOptionsDisabled(optionsDisabled)
-      .setValue(Sort.DAY);
+      .setValue(SORT_DEFAULT);
 
     this.view.addEventListener('change', this.onChange.bind(this));
     this.model.points.addEventListener('filter', this.onFilter.bind(this));
@@ -34,7 +34,7 @@ export default class SortPresenter extends Presenter {
 
   onChange() {
     const value = this.view.getValue();
-    const compare = SortPredicate[Sort.findKey(value)];
+    const compare = SortPredicate[SortType.findKey(value)];
 
     this.model.points.setSort(compare);
   }

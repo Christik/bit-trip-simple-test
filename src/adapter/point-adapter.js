@@ -2,9 +2,9 @@ import Adapter from './adapter.js';
 
 export default class PointAdapter extends Adapter {
   /**
-   * @param {Point} point
+   * @param {Partial<Point>} point
    */
-  constructor(point) {
+  constructor(point = {}) {
     super();
 
     this.basePrice = point.base_price;
@@ -12,12 +12,13 @@ export default class PointAdapter extends Adapter {
     this.endDate = point.date_to;
     this.destinationId = point.destination;
     this.id = Number(point.id);
-    this.offerIds = point.offers;
+    this.offerIds = point.offers?.slice();
     this.type = point.type;
+    this.isFavorite = point.is_favorite;
   }
 
   /**
-   * @return {Point}
+   * @return {Partial<Point>}
    */
   toJSON() {
     return {
@@ -27,7 +28,8 @@ export default class PointAdapter extends Adapter {
       'destination': this.destinationId,
       'id': String(this.id),
       'offers': this.offerIds,
-      'type': this.type
+      'type': this.type,
+      'is_favorite': this.isFavorite
     };
   }
 }

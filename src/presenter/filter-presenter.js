@@ -1,4 +1,4 @@
-import Filter from '../enum/filter.js';
+import FilterType from '../enum/filter-type.js';
 import FilterLabel from '../enum/filter-label.js';
 import FilterDisabled from '../enum/filter-disabled.js';
 import FilterPredicate from '../enum/filter-predicate.js';
@@ -6,8 +6,8 @@ import Presenter from './presenter.js';
 
 /**
  * @template {ApplicationModel} Model
- * @template {FilterSelectView} View
- * @extends Presenter<Model,View>
+ * @template {FilterView} View
+ * @extends {Presenter<Model,View>}
  */
 export default class FilterPresenter extends Presenter {
   /**
@@ -16,37 +16,28 @@ export default class FilterPresenter extends Presenter {
   constructor(...args) {
     super(...args);
 
+    const points = this.model.points.list();
+
     /** @type {[string, string][]} */
-    const options = Object.keys(Filter).map(
-      (key) => [FilterLabel[key], Filter[key]]
+    const options = Object.keys(FilterType).map(
+      (key) => [FilterLabel[key], FilterType[key]]
+    );
+
+    const optionsDisabled = Object.keys(FilterType).map(
+      (key) => FilterDisabled[key](points)
     );
 
     this.view
       .setOptions(options)
-      .setOptionsDisabled(this.getOptionsDisabled())
-      .setValue(Filter.EVERYTHING)
-      .addEventListener('change', this.onChange.bind(this));
+      .setOptionsDisabled(optionsDisabled)
+      .setValue(FilterType.EVERYTHING);
 
-    this.model.addEventListener(['view', 'edit', 'create'], (event) => {
-      const flags = this.getOptionsDisabled();
-
-      if (event.type !== 'view') {
-        flags.fill(true);
-      }
-
-      this.view.setOptionsDisabled(flags);
-    });
-  }
-
-  getOptionsDisabled() {
-    return Object.values(FilterPredicate).map((predicate) =>
-      !this.model.points.list(predicate).length
-    );
+    this.view.addEventListener('change', this.onChange.bind(this));
   }
 
   onChange() {
     const value = this.view.getValue();
-    const predicate = FilterPredicate[Filter.findKey(value)];
+    const predicate = FilterPredicate[FilterType.findKey(value)];
 
     this.model.points.setFilter(predicate);
   }

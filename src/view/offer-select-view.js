@@ -1,9 +1,8 @@
 import './offer-select-view.css';
 
-import ComponentView, {html} from './component-view.js';
-import OfferOptionView from './offer-option-view';
+import View, {html} from './view.js';
 
-export default class OfferSelectView extends ComponentView {
+export default class OfferSelectView extends View {
   constructor() {
     super(...arguments);
 
@@ -22,21 +21,39 @@ export default class OfferSelectView extends ComponentView {
   `;
   }
 
+  createOptionTemplate(id, title, price) {
+    return html`
+      <div class="event__offer-selector">
+        <input
+          class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${id}"
+          type="checkbox"
+          name="event-offer"
+          value="${id}"
+        >
+        <label class="event__offer-label" for="event-offer-${id}">
+          <span class="event__offer-title">${title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        </label>
+      </div>
+    `;
+  }
+
+  getSelectedValues() {
+    /** @type {NodeListOf<HTMLInputElement>} */
+    const selectedInputViews = this.querySelectorAll(':checked');
+
+    return [...selectedInputViews].map((view) => view.value);
+  }
+
   /**
    * @param {[number, string, number][]} states
    */
   setOptions(states) {
-    const areOffersEmpty = (states.length === 0);
-    const views = states.map((state) => new OfferOptionView(...state));
+    const templates = states.map((state) => this.createOptionTemplate(...state));
 
-    if (areOffersEmpty) {
-      this.hidden = true;
-
-      return this;
-    }
-
-    this.hidden = false;
-    this.offersView.replaceChildren(...views);
+    this.offersView.innerHTML = templates.join('');
 
     return this;
   }

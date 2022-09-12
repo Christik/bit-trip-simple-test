@@ -1,53 +1,57 @@
-import Presenter from './presenter.js';
-import Type from '../enum/type.js';
-import TypeLabel from '../enum/type-label.js';
 import Mode from '../enum/mode.js';
+import PointType from '../enum/point-type.js';
+import PointLabel from '../enum/point-label.js';
+import DateFormat from '../enum/date-format.js';
+import Presenter from './presenter.js';
+import PointAdapter from '../adapter/point-adapter.js';
 
 /**
  * @template {ApplicationModel} Model
  * @template {EditorView} View
- * @extends Presenter<Model,View>
+ * @extends {Presenter<Model,View>}
  */
 export default class EditorPresenter extends Presenter {
-  // TODO: this.model.editablePoint
-  #point;
-
   /**
    * @param {[model: Model, view: View]} args
    */
   constructor(...args) {
     super(...args);
 
+    this.buildTypeSelectView();
+    this.buildDestinationSelectView();
+    this.buildDatePickerView();
+
+    // TODO mode event
     this.model.addEventListener('edit', this.onPointEdit.bind(this));
     this.view.addEventListener('reset', this.onViewReset.bind(this));
     this.view.addEventListener('close', () => {
       this.model.setMode(Mode.VIEW);
     });
 
-    this.buildTypeSelectView().addEventListener(
+    this.view.pointTypeSelectView.addEventListener(
       'change',
       this.onTypeSelectChange.bind(this)
     );
 
-    this.buildDestinationSelectView().addEventListener(
+    this.view.destinationSelectView.addEventListener(
       'change',
       this.updateDestinationDetailsView.bind(this)
     );
+
+    this.view.addEventListener('submit', this.onViewSubmit.bind(this));
   }
 
   buildTypeSelectView() {
-    /** @type {[string, PointType][]} */
-    const options = Object.values(Type).map((value) => {
-      const key = Type.findKey(value);
-      const label = TypeLabel[key];
+    /** @type {[string, string][]} */
+    const options = Object.values(PointType).map((value) => {
+      const key = PointType.findKey(value);
+      const label = PointLabel[key];
 
       return [label, value];
     });
 
-    return this.view.typeSelectView.setOptions(options);
+    this.view.pointTypeSelectView.setOptions(options);
   }
-
-  buildDatePicker() {}
 
   buildDestinationSelectView() {
     /** @type {[string, string][]} */
@@ -55,26 +59,38 @@ export default class EditorPresenter extends Presenter {
       (item) => ['', item.name]
     );
 
-    return this.view.destinationSelectView.setOptions(options);
+    this.view.destinationSelectView
+      .setOptions(options);
+  }
+
+  buildDatePickerView() {
+    this.view.datePickerView.configure({
+      dateFormat: DateFormat.DATE_TIME,
+      locale: {firstDayOfWeek: 1}
+    });
   }
 
   buildOfferSelectView() {
-    const type = this.view.typeSelectView.getValue();
+    const type = this.view.pointTypeSelectView.getValue();
     const availableOffers = this.model.offerGroups.findById(type).items;
 
     /** @type {[number, string, number][]} */
     const options = availableOffers.map((offer) => [offer.id, offer.title, offer.price]);
 
-    this.view.offerSelectView.setOptions(options);
+    this.view.offerSelectView
+      .set('hidden', !availableOffers.length)
+      .setOptions(options);
   }
 
   updateTypeSelectView() {
-    this.view.typeSelectView.setValue(this.#point.type);
+    this.view.pointTypeSelectView.setValue(this.model.activePoint.type);
   }
 
   updateDestinationSelectView() {
-    const label = TypeLabel[Type.findKey(this.#point.type)];
-    const destination = this.model.destinations.findById(this.#point.destinationId);
+    const label = PointLabel[PointType.findKey(this.model.activePoint.type)];
+    const destination = this.model.destinations.findById(
+      this.model.activePoint.destinationId
+    );
 
     this.view.destinationSelectView
       .setLabel(label)
@@ -82,20 +98,22 @@ export default class EditorPresenter extends Presenter {
   }
 
   updateDatePickerView() {
-    this.view.datePickerView
-      .setEndDate(this.#point.endDate)
-      .setStartDate(this.#point.startDate);
+    const {startDate, endDate} = this.model.activePoint;
+
+    this.view.datePickerView.setDates(startDate, endDate);
   }
 
   updatePriceInput() {
-    this.view.priceInputView.setValue(this.#point.basePrice);
+    const {basePrice} = this.model.activePoint;
+
+    this.view.priceInputView.setValue(String(basePrice));
   }
 
   updateOfferSelectView() {
-    const type = this.view.typeSelectView.getValue();
+    const type = this.view.pointTypeSelectView.getValue();
     const availableOffers = this.model.offerGroups.findById(type).items;
     const optionsChecked = availableOffers.map(
-      (offer) => (this.#point.offerIds.includes(offer.id))
+      (offer) => (this.model.activePoint.offerIds.includes(offer.id))
     );
 
     this.view.offerSelectView.setOptionsChecked(optionsChecked);
@@ -110,7 +128,7 @@ export default class EditorPresenter extends Presenter {
       ({ src, description }) => [ src, description ]
     );
 
-    this.view.destinationDetailsView
+    this.view.destinationView
       .setDescription(destination.description)
       .setPictures(pictureOptions);
   }
@@ -127,21 +145,40 @@ export default class EditorPresenter extends Presenter {
     return this;
   }
 
+  getFormData() {
+    const point = new PointAdapter();
+    const destinationName = this.view.destinationSelectView.getValue();
+    const [startDate, endDate] = this.view.datePickerView.getDates();
+
+    point.type = this.view.pointTypeSelectView.getValue();
+    point.destinationId = this.model.destinations.findBy('name', destinationName)?.id;
+    point.startDate = startDate;
+    point.endDate = endDate;
+    point.basePrice = Number(this.view.priceInputView.getValue());
+    point.offerIds = this.view.offerSelectView.getSelectedValues().map(Number);
+    point.isFavorite = false;
+
+    return point;
+  }
+
   onTypeSelectChange() {
-    const type = this.view.typeSelectView.getValue();
-    const typeLabel = TypeLabel[Type.findKey(type)];
+    const type = this.view.pointTypeSelectView.getValue();
+    const typeLabel = PointLabel[PointType.findKey(type)];
 
     this.view.destinationSelectView.setLabel(typeLabel);
     this.buildOfferSelectView();
   }
 
   onPointEdit() {
-    this.#point = this.model.editablePoint;
+    /** @type {PointView} */
+    const linkedPointView = document.querySelector(
+      `[data-id="${this.model.activePoint.id}"]`
+    );
 
     this.view.close(true);
     this.updateView();
     this.view
-      .link(document.querySelector(`#item-${this.#point.id}`))
+      .target(linkedPointView)
       .open();
   }
 
@@ -150,14 +187,19 @@ export default class EditorPresenter extends Presenter {
 
     this.view.setRemovingMode();
 
-    try {
-      await this.model.points.remove(this.model.editablePoint.id);
-      this.view.close();
-
-    } catch (exception) {
-      // shake формы
-    }
+    await this.model.points.remove(this.model.activePoint.id);
+    this.view.close();
 
     this.view.unsetRemovingMode();
+  }
+
+  async onViewSubmit(event) {
+    event.preventDefault();
+
+    try {
+      await this.model.points.update(this.model.activePoint.id, this.getFormData());
+    } catch (exception) {
+      // shake
+    }
   }
 }

@@ -48,7 +48,7 @@ export default class Store {
    */
   list() {
     return this.request('/', {
-      method: 'get'
+      method: 'GET'
     });
   }
 
@@ -58,7 +58,7 @@ export default class Store {
    */
   add(item) {
     return this.request('/', {
-      method: 'post',
+      method: 'POST',
       body: JSON.stringify(item)
     });
   }
@@ -70,7 +70,7 @@ export default class Store {
    */
   update(id, item) {
     return this.request(`/${id}`, {
-      method: 'put',
+      method: 'PUT',
       body: JSON.stringify(item)
     });
   }
@@ -81,7 +81,7 @@ export default class Store {
    */
   remove(id) {
     return this.request(`/${id}`, {
-      method: 'delete'
+      method: 'DELETE'
     });
   }
 }

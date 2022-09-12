@@ -3,18 +3,22 @@
  * @param  {...*} values
  * @return {string}
  */
-export const html = (strings, ...values) => values.reduce(
-  (result, value, index) => {
-    if (typeof value === 'function') {
+export const html = (strings, ...values) =>
+  values.reduce((result, value, index) => {
+
+    if (value?.isViewConstructor) {
       value = `<${value}></${value}>`;
     }
 
-    return result + value + strings[index + 1];
-  },
-  strings[0]
-);
+    if (Array.isArray(value)) {
+      value = value.join('');
+    }
 
-export default class ComponentView extends HTMLElement {
+    return result + value + strings[index + 1];
+
+  }, strings[0]);
+
+export default class View extends HTMLElement {
   constructor() {
     super();
 
@@ -31,11 +35,22 @@ export default class ComponentView extends HTMLElement {
     return 'beforeend';
   }
 
+  createTemplate() {
+    return html`${[...arguments]}`;
+  }
+
   /**
-   * @param {...*} data
+   * @param {string} key
+   * @param {*} value
    */
-  createTemplate(...data) {
-    return data.join('');
+  set(key, value) {
+    this[key] = value;
+
+    return this;
+  }
+
+  static get isViewConstructor() {
+    return true;
   }
 
   static get tagNamePrefix() {

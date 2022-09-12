@@ -1,6 +1,6 @@
 import Enum from './enum.js';
 
-export default class Filter extends Enum {
+export default class FilterType extends Enum {
   static EVERYTHING = 'everything';
   static FUTURE = 'future';
 }

@@ -1,12 +1,11 @@
 import ListItemView, {html} from './list-item-view.js';
-import TypeSelectView from './type-select-view.js';
+import PointTypeSelectView from './point-type-select-view.js';
 import DestinationSelectView from './destination-select-view.js';
 import DatePickerView from './date-picker-view.js';
 import PriceInputView from './price-input-view.js';
 import OfferSelectView from './offer-select-view.js';
-import DestinationDetailsView from './destination-details-view.js';
+import DestinationView from './destination-view.js';
 import {isKeyEscape} from '../utils.js';
-import Mode from '../enum/mode.js';
 
 const RemovingMode = {
   ACTIVE: 'Deleting...',
@@ -14,23 +13,11 @@ const RemovingMode = {
 };
 
 export default class EditorView extends ListItemView {
-  #linked;
-
   constructor() {
     super();
 
-    this.removeSelector = '.event__reset-btn';
-    this.closeSelector = '.event__rollup-btn';
-
-    this.bodyView = this.querySelector('.event__details');
-    this.offersContainerView = this.querySelector('.event__section--offers');
-    this.offerListView = this.querySelector('.event__available-offers');
-
-    /** @type {HTMLButtonElement} */
-    this.removeView = this.querySelector(this.removeSelector);
-
-    /** @type {TypeSelectView} */
-    this.typeSelectView = this.querySelector(String(TypeSelectView));
+    /** @type {PointTypeSelectView} */
+    this.pointTypeSelectView = this.querySelector(String(PointTypeSelectView));
 
     /** @type {DestinationSelectView} */
     this.destinationSelectView = this.querySelector(String(DestinationSelectView));
@@ -44,8 +31,20 @@ export default class EditorView extends ListItemView {
     /** @type {OfferSelectView} */
     this.offerSelectView = this.querySelector(String(OfferSelectView));
 
-    /** @type {DestinationDetailsView} */
-    this.destinationDetailsView = this.querySelector(String(DestinationDetailsView));
+    /** @type {DestinationView} */
+    this.destinationView = this.querySelector(String(DestinationView));
+
+    /** @type {HTMLButtonElement} */
+    this.submitButtonView = this.querySelector('.event__save-btn');
+
+    /** @type {HTMLButtonElement} */
+    this.resetButtonView = this.querySelector('.event__reset-btn');
+
+    /** @type {HTMLButtonElement} */
+    this.closeButtonView = this.querySelector('.event__rollup-btn');
+
+    /** @type {Element} */
+    this.targetView = null;
 
     this.addEventListener('click', this.onClick);
   }
@@ -57,42 +56,58 @@ export default class EditorView extends ListItemView {
     return html`
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
-          ${TypeSelectView}
+          ${PointTypeSelectView}
           ${DestinationSelectView}
           ${DatePickerView}
           ${PriceInputView}
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          ${this.createButtonsTemplate()}
         </header>
         <section class="event__details">
           ${OfferSelectView}
-          ${DestinationDetailsView}
+          ${DestinationView}
         </section>
       </form>
     `;
   }
 
+  createButtonsTemplate() {
+    return html`
+      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>
+  `;
+  }
+
   /**
-   * @param {PointView} view
+   * @param {Element} view
    */
-  link(view) {
-    this.#linked = view;
+  target(view) {
+    this.targetView = view;
 
     return this;
   }
 
+  connect() {
+    this.targetView.replaceWith(this);
+  }
+
+  disconnect() {
+    this.replaceWith(this.targetView);
+  }
+
   open() {
-    this.#linked.replaceWith(this);
+    this.connect();
+
     document.addEventListener('keydown', this);
 
     return this;
   }
 
   close(silent = false) {
-    this.replaceWith(this.#linked);
+    this.disconnect();
+
     document.removeEventListener('keydown', this);
 
     if (!silent) {
@@ -102,22 +117,18 @@ export default class EditorView extends ListItemView {
     return this;
   }
 
-  reset() {
-    this.querySelector('form').reset();
-  }
-
   setRemovingMode() {
-    this.removeView.textContent = RemovingMode.ACTIVE;
-    this.removeView.disabled = true;
+    this.resetButtonView.textContent = RemovingMode.ACTIVE;
+    this.resetButtonView.disabled = true;
   }
 
   unsetRemovingMode() {
-    this.removeView.textContent = RemovingMode.INACTIVE;
-    this.removeView.disabled = false;
+    this.resetButtonView.textContent = RemovingMode.INACTIVE;
+    this.resetButtonView.disabled = false;
   }
 
   onClick(event) {
-    if (event.target.closest(this.closeSelector)) {
+    if (event.target === this.closeButtonView) {
       this.close();
     }
   }

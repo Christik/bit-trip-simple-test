@@ -16,7 +16,7 @@ export default class ApplicationModel extends Model {
     super();
 
     this.points = points;
-    this.editablePoint = null;
+    this.activePoint = null;
     this.destinations = destinations;
     this.offerGroups = offerGroups;
   }
@@ -41,7 +41,7 @@ export default class ApplicationModel extends Model {
     const eventType = Mode.findKey(mode).toLowerCase();
 
     this.#mode = mode;
-    this.editablePoint = this.points.findById(editablePointId);
+    this.activePoint = this.points.findById(editablePointId);
 
     this.dispatchEvent(new CustomEvent(eventType));
   }

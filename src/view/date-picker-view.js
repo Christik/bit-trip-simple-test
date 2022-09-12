@@ -1,29 +1,47 @@
 import 'flatpickr/dist/flatpickr.min.css';
 
 import initCalendar from 'flatpickr';
-import ComponentView, {html} from './component-view.js';
+import View, {html} from './view.js';
 
 /** @typedef {import('flatpickr/dist/types/instance').Instance} Calendar */
 /** @typedef {import('flatpickr/dist/types/options').DateOption} CalendarDate */
 /** @typedef {import('flatpickr/dist/types/options').Options} CalendarOptions */
 
-const DATE_FORMAT = 'd/m/y H:i';
-
-// TODO: вынести логику в презентер
-
-export default class DatePickerView extends ComponentView {
-  #startInputSelector = '[name="event-start-time"]';
-  #endInputSelector = '[name="event-end-time"]';
-
+export default class DatePickerView extends View {
   #startDateCalendar;
   #endDateCalendar;
 
   constructor() {
     super(...arguments);
 
-    this.classList.add('event__field-group', 'event__field-group--time');
+    const calendarOptions = {
+      'enableTime': true,
+      'time_24hr': true
+    };
 
-    this.#initFlatpickr();
+    const onStartDateChange = (selectedDates) =>
+      this.#endDateCalendar.set('minDate', selectedDates[0]);
+
+    /**
+     * @type {Calendar}
+     */
+    this.#startDateCalendar = initCalendar(
+      this.querySelector('[name="event-start-time"]'),
+      {
+        ...calendarOptions,
+        onChange: [onStartDateChange]
+      }
+    );
+
+    /**
+     * @type {Calendar}
+     */
+    this.#endDateCalendar = initCalendar(
+      this.querySelector('[name="event-end-time"]'),
+      calendarOptions
+    );
+
+    this.classList.add('event__field-group', 'event__field-group--time');
   }
 
   /**
@@ -51,78 +69,31 @@ export default class DatePickerView extends ComponentView {
     `;
   }
 
-  #initFlatpickr() {
-    const changeDate = (_, __, instance) => {
-      const inputView = instance.element;
-      const isStartInput = inputView.closest(this.#startInputSelector);
-
-      if (isStartInput) {
-        this.#updateStartDate();
-        return;
-      }
-
-      this.#updateEndDate();
-    };
-
-    const options = {
-      'dateFormat': DATE_FORMAT,
-      'enableTime': true,
-      'time_24hr': true,
-      'onChange': changeDate,
-    };
-
-    this.#startDateCalendar = initCalendar(
-      this.querySelector(this.#startInputSelector),
-      options
-    );
-
-    this.#endDateCalendar = initCalendar(
-      this.querySelector(this.#endInputSelector),
-      options
-    );
-  }
-
-  #updateStartDate() {
-    const [date] = this.#startDateCalendar.selectedDates;
-    this.#endDateCalendar.set('minDate', date);
-  }
-
-  #updateEndDate() {
-    const [date] = this.#endDateCalendar.selectedDates;
-    this.#startDateCalendar.set('maxDate', date);
-  }
-
-  getStartDate() {
-    return this.#startDateCalendar.selectedDates[0];
-  }
-
   /**
-   * @param {CalendarDate} value
-   * @param {CalendarOptions} options
+   * @param {CalendarOptions} startDateOptions
+   * @param {CalendarOptions} endDateOptions
    */
-  setStartDate(value, options = {}) {
-    const date = new Date(value);
-
-    this.#startDateCalendar.set(options);
-    this.#startDateCalendar.setDate(date);
+  configure(startDateOptions, endDateOptions = startDateOptions) {
+    this.#startDateCalendar.set(startDateOptions);
+    this.#endDateCalendar.set(endDateOptions);
 
     return this;
   }
 
-  getEndDate() {
-    return this.#endDateCalendar.selectedDates[0];
+  getDates() {
+    return [
+      this.#startDateCalendar.selectedDates[0]?.toJSON(),
+      this.#endDateCalendar.selectedDates[0]?.toJSON()
+    ];
   }
 
   /**
-   * @param {string} value
+   * @param {CalendarDate} startDate
+   * @param {CalendarDate} endDate
    */
-  setEndDate(value) {
-    const date = new Date(value);
-
-    this.#endDateCalendar.setDate(date);
-    this.#updateEndDate();
-
-    return this;
+  setDates(startDate, endDate = startDate) {
+    this.#startDateCalendar.setDate(startDate, true);
+    this.#endDateCalendar.setDate(endDate, true);
   }
 }
 

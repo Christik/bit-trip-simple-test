@@ -4,7 +4,7 @@ import Presenter from './presenter.js';
 /**
  * @template {ApplicationModel} Model
  * @template {HTMLButtonElement} View
- * @extends Presenter<Model,View>
+ * @extends {Presenter<Model,View>}
  */
 export default class CreateButtonPresenter extends Presenter {
   /**
@@ -13,12 +13,15 @@ export default class CreateButtonPresenter extends Presenter {
   constructor(...args) {
     super(...args);
 
-    this.view.addEventListener('click', () => {
-      this.model.setMode(Mode.CREATE);
-    });
+    this.view.addEventListener('click', this.onClick.bind(this));
+    this.model.addEventListener(['view', 'edit', 'create'], this.onModeChange.bind(this));
+  }
 
-    this.model.addEventListener(['view', 'create', 'edit'], () => {
-      this.view.disabled = this.model.getMode() === Mode.CREATE;
-    });
+  onClick() {
+    this.model.setMode(Mode.CREATE);
+  }
+
+  onModeChange() {
+    this.view.disabled = (this.model.getMode() === Mode.CREATE);
   }
 }
