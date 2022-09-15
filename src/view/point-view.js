@@ -2,7 +2,6 @@ import ListItemView, {html} from './list-item-view.js';
 import OfferView from './offer-view.js';
 
 export default class PointView extends ListItemView {
-  // TODO не нужен
   #id;
 
   /**
@@ -12,7 +11,7 @@ export default class PointView extends ListItemView {
     super(state);
 
     this.#id = state.id;
-    this.dataset.id = String(state.id);
+    this.id = `${this.constructor}-${state.id}`;
 
     this.addEventListener('click', this.onClick);
   }
@@ -60,6 +59,10 @@ export default class PointView extends ListItemView {
     `;
   }
 
+  getId() {
+    return this.#id;
+  }
+
   /**
    * @param {OfferState[]} states
    */
@@ -80,10 +83,18 @@ export default class PointView extends ListItemView {
 
     this.dispatchEvent(
       new CustomEvent('point-edit', {
-        detail: {id: this.#id},
         bubbles: true,
       })
     );
+  }
+
+  /**
+   * @param {number} id
+   * @param {Document | Element} rootView
+   * @returns {PointView}
+   */
+  static findById(id, rootView = document) {
+    return rootView.querySelector(`#${this}-${id}`);
   }
 }
 

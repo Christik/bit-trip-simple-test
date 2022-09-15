@@ -73,7 +73,11 @@ export default class CollectionModel extends Model {
 
     this.#items.push(newItem);
 
-    this.dispatchEvent(new CustomEvent('add'));
+    this.dispatchEvent(
+      new CustomEvent('add', {
+        detail: this.#adapt(newItem)
+      })
+    );
   }
 
   /**
@@ -86,18 +90,26 @@ export default class CollectionModel extends Model {
 
     this.#items.splice(index, 1, updatedItem);
 
-    this.dispatchEvent(new CustomEvent('update'));
+    this.dispatchEvent(
+      new CustomEvent('update', {
+        detail: this.#adapt(updatedItem)
+      })
+    );
   }
 
   /**
    * @param {ItemId} id
    */
   async remove(id) {
-    const index = this.findIndexById(id);
-
     await this.#store.remove(id);
-    this.#items.splice(index, 1);
 
-    this.dispatchEvent(new CustomEvent('remove'));
+    const index = this.findIndexById(id);
+    const [removedItem] = this.#items.splice(index, 1);
+
+    this.dispatchEvent(
+      new CustomEvent('remove', {
+        detail: this.#adapt(removedItem)
+      })
+    );
   }
 }

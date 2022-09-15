@@ -32,10 +32,10 @@ export default class FilterPresenter extends Presenter {
       .setOptionsDisabled(optionsDisabled)
       .setValue(FilterType.EVERYTHING);
 
-    this.view.addEventListener('change', this.onChange.bind(this));
+    this.view.addEventListener('change', this.onViewChange.bind(this));
   }
 
-  onChange() {
+  onViewChange() {
     const value = this.view.getValue();
     const predicate = FilterPredicate[FilterType.findKey(value)];
 

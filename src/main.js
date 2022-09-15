@@ -20,6 +20,10 @@ import ListPresenter from './presenter/list-presenter.js';
 import EditorPresenter from './presenter/editor-presenter.js';
 import PlaceholderPresenter from './presenter/placeholder-presenter.js';
 import CreateButtonPresenter from './presenter/create-button-presenter.js';
+import Mode from './enum/mode.js';
+import CreatorPresenter from './presenter/creator-presenter.js';
+import CreatorView from './view/creator-view.js';
+import SortPredicate from './enum/sort-predicate.js';
 
 const BASE_URL = 'https://18.ecmascript.pages.academy/big-trip';
 const POINTS_URL = `${BASE_URL}/points`;
@@ -36,10 +40,9 @@ const destinationStore = new Store(DESTINATIONS_URL, AUTH);
 /** @type {Store<OfferGroup>} */
 const offerStore = new Store(OFFERS_URL, AUTH);
 
-const points = new DataTableModel(
-  pointStore,
-  (point) => new PointAdapter(point)
-).setFilter(FilterPredicate.EVERYTHING);
+const points = new DataTableModel(pointStore, (point) => new PointAdapter(point))
+  .setFilter(FilterPredicate.EVERYTHING)
+  .setSort(SortPredicate.DAY);
 
 const destinations = new CollectionModel(
   destinationStore,
@@ -68,20 +71,23 @@ const createButtonView = document.querySelector('.trip-main__event-add-btn');
 /** @type {FilterView} */
 const filterView = document.querySelector(String(FilterView));
 
+const creatorView = new CreatorView().target(listView);
+
 applicationModel.ready().then(() => {
   new FilterPresenter(applicationModel, filterView);
   new SortPresenter(applicationModel, sortView);
   new ListPresenter(applicationModel, listView);
   new EditorPresenter(applicationModel, new EditorView());
+  new CreatorPresenter(applicationModel, creatorView);
   new PlaceholderPresenter(applicationModel, placeholderView);
   new CreateButtonPresenter(applicationModel, createButtonView);
 });
 
 const {group, groupEnd, trace} = console;
 
-applicationModel.addEventListener(['view', 'create', 'edit'], (event) => {
+applicationModel.addEventListener('mode', () => {
   groupEnd();
-  group(event.type);
+  group(Mode.findKey(applicationModel.getMode()));
 });
 
 applicationModel.points.addEventListener(['add', 'update', 'remove', 'filter', 'sort'], (event) => {

@@ -1,3 +1,5 @@
+import './view.css';
+
 /**
  * @param {TemplateStringsArray} strings
  * @param  {...*} values
@@ -47,6 +49,16 @@ export default class View extends HTMLElement {
     this[key] = value;
 
     return this;
+  }
+
+  shake() {
+    this.classList.add('shake');
+
+    this.addEventListener('animationend', () => {
+      this.classList.remove('shake');
+    }, {
+      once: true
+    });
   }
 
   static get isViewConstructor() {

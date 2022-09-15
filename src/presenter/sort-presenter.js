@@ -28,18 +28,18 @@ export default class SortPresenter extends Presenter {
       .setOptionsDisabled(optionsDisabled)
       .setValue(SORT_DEFAULT);
 
-    this.view.addEventListener('change', this.onChange.bind(this));
-    this.model.points.addEventListener('filter', this.onFilter.bind(this));
+    this.view.addEventListener('change', this.onViewChange.bind(this));
+    this.model.points.addEventListener('filter', this.onModelPointsFilter.bind(this));
   }
 
-  onChange() {
+  onViewChange() {
     const value = this.view.getValue();
     const compare = SortPredicate[SortType.findKey(value)];
 
     this.model.points.setSort(compare);
   }
 
-  onFilter() {
+  onModelPointsFilter() {
     this.view.setValue(SORT_DEFAULT);
     this.model.points.setSort(SortPredicate.DEFAULT);
   }

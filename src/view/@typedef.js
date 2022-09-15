@@ -6,6 +6,7 @@
 /** @typedef {import('./sort-view').default} SortView */
 /** @typedef {import('./point-view').default} PointView */
 /** @typedef {import('./editor-view').default} EditorView */
+/** @typedef {import('./creator-view').default} CreatorView */
 /** @typedef {import('./list-view').default} ListView */
 /** @typedef {import('./offer-view').State} OfferState */
 
@@ -21,11 +22,4 @@
  * @prop {string} endTime
  * @prop {string} price
  * @prop {OfferState[]} offers
- */
-
-/** @typedef {CustomEvent<PointerEventData>} PointEvent */
-
-/**
- * @typedef PointerEventData
- * @prop {number} id
  */

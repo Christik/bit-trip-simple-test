@@ -16,7 +16,10 @@ export default class PlaceholderPresenter extends Presenter {
 
     this.updateView();
 
-    this.model.points.addEventListener(['add', 'remove'], this.onModelPointsChange.bind(this));
+    this.model.points.addEventListener(
+      ['add', 'remove'],
+      this.onModelPointsChange.bind(this)
+    );
   }
 
   updateView() {

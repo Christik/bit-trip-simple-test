@@ -14,7 +14,7 @@ export default class CreateButtonPresenter extends Presenter {
     super(...args);
 
     this.view.addEventListener('click', this.onClick.bind(this));
-    this.model.addEventListener(['view', 'edit', 'create'], this.onModeChange.bind(this));
+    this.model.addEventListener('mode', this.onModeChange.bind(this));
   }
 
   onClick() {

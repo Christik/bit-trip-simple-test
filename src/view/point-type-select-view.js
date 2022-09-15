@@ -90,7 +90,7 @@ export default class PointTypeSelectView extends RadioGroupView {
     const { type, value } = event.target;
 
     if (type === 'checkbox') {
-      event.stopPropagation();
+      event.stopImmediatePropagation();
 
       return;
     }

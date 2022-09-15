@@ -9,6 +9,13 @@ export default class ListView extends View {
   }
 
   /**
+   * @param {number} id
+   */
+  findById(id) {
+    return PointView.findById(id, this);
+  }
+
+  /**
    * @param {PointState[]} states
    */
   setPoints(states) {
