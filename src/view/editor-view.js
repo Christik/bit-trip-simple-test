@@ -30,27 +30,24 @@ export default class EditorView extends CreatorView {
   /**
    * @param {boolean} flag
    */
-  setDeleteButtonPressed(flag) {
+  setDeleting(flag) {
     /** @type {HTMLButtonElement} */
     const buttonView = this.querySelector('.event__reset-btn');
 
-    buttonView.disabled = flag;
     buttonView.textContent = flag ? DeleteButtonLabel.PRESSED : DeleteButtonLabel.DEFAULT;
-  }
 
-
-  /**
-   * @override
-   */
-  connect() {
-    this.targetView.replaceWith(this);
+    this.setDisabled(flag);
+    this.loaderView.display(flag);
   }
 
   /**
    * @override
+   * @param {boolean} flag
    */
-  disconnect() {
-    this.replaceWith(this.targetView);
+  display(flag) {
+    (flag ? this.targetView : this).replaceWith(flag ? this : this.targetView);
+
+    return this;
   }
 
   onClick(event) {

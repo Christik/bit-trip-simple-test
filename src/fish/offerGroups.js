@@ -1,6 +1,6 @@
 import PointType from '../enum/point-type.js';
 import { generateOffer } from './offer.js';
-import { getRandomInteger } from '../utils';
+import { getRandomInteger } from '../format';
 
 const generateOffersOfType = (quantity) => {
   const offers = [];

@@ -21,7 +21,7 @@ export default class OfferSelectView extends View {
   `;
   }
 
-  createOptionTemplate(id, title, price) {
+  createOptionTemplate(id, title, price, isChecked) {
     return html`
       <div class="event__offer-selector">
         <input
@@ -30,6 +30,7 @@ export default class OfferSelectView extends View {
           type="checkbox"
           name="event-offer"
           value="${id}"
+          ${isChecked ? 'checked' : ''}
         >
         <label class="event__offer-label" for="event-offer-${id}">
           <span class="event__offer-title">${title}</span>
@@ -48,23 +49,12 @@ export default class OfferSelectView extends View {
   }
 
   /**
-   * @param {[number, string, number][]} states
+   * @param {[number, string, number, boolean][]} states
    */
   setOptions(states) {
     const templates = states.map((state) => this.createOptionTemplate(...state));
 
     this.offersView.innerHTML = templates.join('');
-
-    return this;
-  }
-
-  /**
-   * @param {boolean[]} flags
-   */
-  setOptionsChecked(flags) {
-    const inputViews = this.querySelectorAll('input');
-
-    flags.forEach((flag, index) => (inputViews[index].checked = flag));
 
     return this;
   }

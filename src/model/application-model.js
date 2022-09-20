@@ -1,7 +1,6 @@
 import Mode from '../enum/mode.js';
-import Model from './model.js';
-import PointAdapter from '../adapter/point-adapter.js';
 import PointType from '../enum/point-type.js';
+import Model from './model.js';
 
 export default class ApplicationModel extends Model {
   /**
@@ -17,18 +16,38 @@ export default class ApplicationModel extends Model {
   constructor(points, destinations, offerGroups) {
     super();
 
-    this.points = points;
+    this.pointsModel = points;
     this.activePoint = null;
-    this.destinations = destinations;
-    this.offerGroups = offerGroups;
+    this.destinationsModel = destinations;
+    this.offerGroupsModel = offerGroups;
+
+    // TODO: переименовать обработчики
   }
 
+  /**
+   * @override
+   */
   async ready() {
     await Promise.all([
-      this.points.ready(),
-      this.destinations.ready(),
-      this.offerGroups.ready()
+      this.pointsModel.ready(),
+      this.destinationsModel.ready(),
+      this.offerGroupsModel.ready()
     ]);
+  }
+
+  get defaultPoint() {
+    const point = this.pointsModel.blank;
+    const [firstDestination] = this.destinationsModel.listAll();
+
+    point.type = PointType.TAXI;
+    point.destinationId = firstDestination.id;
+    point.startDate = new Date().toJSON();
+    point.endDate = point.startDate;
+    point.basePrice = 0;
+    point.offerIds = [];
+    point.isFavorite = false;
+
+    return point;
   }
 
   getMode() {
@@ -40,27 +59,24 @@ export default class ApplicationModel extends Model {
    * @param {number} activePointId
    */
   setMode(mode, activePointId = null) {
+    switch (mode) {
+      case Mode.VIEW:
+        this.activePoint = null;
+        break;
+
+      case Mode.EDIT:
+        this.activePoint = this.pointsModel.findById(activePointId);
+        break;
+
+      case Mode.CREATE:
+        this.activePoint = this.defaultPoint;
+        break;
+
+      default:
+        throw new Error('Invalid mode');
+    }
+
     this.#mode = mode;
-    this.activePoint = null;
-
-    if (mode === Mode.EDIT) {
-      this.activePoint = this.points.findById(activePointId);
-    }
-
-    else if (mode === Mode.CREATE) {
-      const point = new PointAdapter();
-      const [firstDestination] = this.destinations.listAll();
-
-      point.type = PointType.TAXI;
-      point.destinationId = firstDestination.id;
-      point.startDate = new Date().toJSON();
-      point.endDate = point.startDate;
-      point.basePrice = null;
-      point.offerIds = [];
-
-      this.activePoint = point;
-    }
-
     this.dispatchEvent(new CustomEvent('mode'));
   }
 }

@@ -1,5 +1,6 @@
 import Enum from './enum.js';
 
+// TODO: переписать без перечисления
 export default class DateFormat extends Enum {
   static DATE = 'DD/MM/YY';
   static TIME = 'HH:mm';

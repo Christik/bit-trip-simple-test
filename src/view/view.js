@@ -51,6 +51,17 @@ export default class View extends HTMLElement {
     return this;
   }
 
+  // TODO: избавиться от set()
+
+  /**
+   * @param {boolean} flag
+   */
+  display(flag) {
+    this.hidden = !flag;
+
+    return this;
+  }
+
   shake() {
     this.classList.add('shake');
 

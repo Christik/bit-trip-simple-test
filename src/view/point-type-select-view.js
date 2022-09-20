@@ -1,5 +1,5 @@
 import RadioGroupView, {html} from './radio-group-view.js';
-import {getIconUrl} from '../utils.js';
+import {getIconUrl} from '../format.js';
 
 export default class PointTypeSelectView extends RadioGroupView {
   constructor() {

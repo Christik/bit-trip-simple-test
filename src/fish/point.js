@@ -3,7 +3,7 @@ import {
   getRandomInteger,
   getRandomArrayElement,
   createRandomizerOfUniqueInteger,
-  createCounter } from '../utils.js';
+  createCounter } from '../format.js';
 import { getOfferGroups } from './offerGroups.js';
 import { getDestinations } from './destinations.js';
 import dayjs from 'dayjs';

@@ -1,4 +1,4 @@
-import { createCounter } from '../utils.js';
+import { createCounter } from '../format.js';
 import { generateDestination } from './destination';
 
 const cities = [

@@ -29,32 +29,32 @@ const BASE_URL = 'https://18.ecmascript.pages.academy/big-trip';
 const POINTS_URL = `${BASE_URL}/points`;
 const DESTINATIONS_URL = `${BASE_URL}/destinations`;
 const OFFERS_URL = `${BASE_URL}/offers`;
-const AUTH = 'Basic er1189jdzbdw';
+const AUTH = 'Basic er1183jdzbdw';
 
 /** @type {Store<Point>} */
-const pointStore = new Store(POINTS_URL, AUTH);
+const pointsStore = new Store(POINTS_URL, AUTH);
 
 /** @type {Store<Destination>} */
-const destinationStore = new Store(DESTINATIONS_URL, AUTH);
+const destinationsStore = new Store(DESTINATIONS_URL, AUTH);
 
 /** @type {Store<OfferGroup>} */
-const offerStore = new Store(OFFERS_URL, AUTH);
+const offerGroupsStore = new Store(OFFERS_URL, AUTH);
 
-const points = new DataTableModel(pointStore, (point) => new PointAdapter(point))
+const pointsModel = new DataTableModel(pointsStore, (point) => new PointAdapter(point))
   .setFilter(FilterPredicate.EVERYTHING)
   .setSort(SortPredicate.DAY);
 
-const destinations = new CollectionModel(
-  destinationStore,
+const destinationsModel = new CollectionModel(
+  destinationsStore,
   (destination) => new DestinationAdapter(destination)
 );
 
-const offerGroups = new CollectionModel(
-  offerStore,
+const offerGroupsModel = new CollectionModel(
+  offerGroupsStore,
   (offerGroup) => new OfferGroupAdapter(offerGroup)
 );
 
-const applicationModel = new ApplicationModel(points, destinations, offerGroups);
+const applicationModel = new ApplicationModel(pointsModel, destinationsModel, offerGroupsModel);
 
 /** @type {SortView} */
 const sortView = document.querySelector(String(SortView));
@@ -83,13 +83,14 @@ applicationModel.ready().then(() => {
   new CreateButtonPresenter(applicationModel, createButtonView);
 });
 
-const {group, groupEnd, trace} = console;
+
+const {trace} = console;
 
 applicationModel.addEventListener('mode', () => {
-  groupEnd();
-  group(Mode.findKey(applicationModel.getMode()));
+  trace(`%cMode.${Mode.findKey(applicationModel.getMode())}`, 'font-size: large');
 });
 
-applicationModel.points.addEventListener(['add', 'update', 'remove', 'filter', 'sort'], (event) => {
-  trace(event.type);
+pointsModel.addEventListener(['add', 'update', 'remove', 'filter', 'sort'], (event) => {
+  trace(`%c${event.type}`, 'font-weight: bold');
 });
+

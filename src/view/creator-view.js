@@ -6,7 +6,8 @@ import DatePickerView from './date-picker-view.js';
 import PriceInputView from './price-input-view.js';
 import OfferSelectView from './offer-select-view.js';
 import DestinationView from './destination-view.js';
-import {isKeyEscape} from '../utils.js';
+import {isKeyEscape} from '../format.js';
+import LoaderView from './loader-view';
 
 export default class CreatorView extends ListItemView {
   constructor() {
@@ -35,6 +36,10 @@ export default class CreatorView extends ListItemView {
 
     /** @type {Element} */
     this.targetView = null;
+
+    this.loaderView = new LoaderView();
+
+    this.formView = this.querySelector('form');
   }
 
   /**
@@ -72,12 +77,23 @@ export default class CreatorView extends ListItemView {
   /**
    * @param {boolean} flag
    */
-  setSaveButtonPressed(flag) {
+  setDisabled(flag) {
+    [...this.formView].forEach((/** @type {HTMLInputElement} */ inputView) => {
+      inputView.disabled = flag;
+    });
+  }
+
+  /**
+   * @param {boolean} flag
+   */
+  setSaving(flag) {
     /** @type {HTMLButtonElement} */
     const buttonView = this.querySelector('.event__save-btn');
 
-    buttonView.disabled = flag;
     buttonView.textContent = flag ? SaveButtonLabel.PRESSED : SaveButtonLabel.DEFAULT;
+
+    this.setDisabled(flag);
+    this.loaderView.display(flag);
   }
 
   /**
@@ -89,16 +105,22 @@ export default class CreatorView extends ListItemView {
     return this;
   }
 
-  connect() {
-    this.targetView.prepend(this);
-  }
+  /**
+   * @override
+   * @param {boolean} flag
+   */
+  display(flag) {
+    if (flag) {
+      this.targetView.prepend(this);
+    } else {
+      this.remove();
+    }
 
-  disconnect() {
-    this.remove();
+    return this;
   }
 
   open() {
-    this.connect();
+    this.display(true);
 
     document.addEventListener('keydown', this);
 
@@ -106,7 +128,7 @@ export default class CreatorView extends ListItemView {
   }
 
   close(silent = false) {
-    this.disconnect();
+    this.display(false);
 
     document.removeEventListener('keydown', this);
 
@@ -121,7 +143,7 @@ export default class CreatorView extends ListItemView {
    * @param {KeyboardEvent} event
    */
   handleEvent(event) {
-    if (isKeyEscape(event)) {
+    if (event.key?.startsWith('Esc')) {
       this.close();
     }
   }

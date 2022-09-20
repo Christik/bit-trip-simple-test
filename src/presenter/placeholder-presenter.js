@@ -1,5 +1,6 @@
 import FilterEmpty from '../enum/filter-empty.js';
 import FilterPredicate from '../enum/filter-predicate.js';
+import Mode from '../enum/mode.js';
 import Presenter from './presenter.js';
 
 /**
@@ -16,21 +17,32 @@ export default class PlaceholderPresenter extends Presenter {
 
     this.updateView();
 
-    this.model.points.addEventListener(
-      ['add', 'remove'],
+    this.model.pointsModel.addEventListener(
+      ['add', 'remove', 'update', 'filter'],
       this.onModelPointsChange.bind(this)
     );
+
+    this.model.addEventListener('mode', this.onModelChange.bind(this));
   }
 
   updateView() {
-    const {length} = this.model.points.list();
-    const key = FilterPredicate.findKey(this.model.points.getFilter());
+    const {length} = this.model.pointsModel.list();
+    const key = FilterPredicate.findKey(this.model.pointsModel.getFilter());
 
     this.view.textContent = length ? '' : FilterEmpty[key];
     this.view.hidden = Boolean(length);
   }
 
   onModelPointsChange() {
+    this.updateView();
+  }
+
+  onModelChange() {
+    if (this.model.getMode() === Mode.CREATE) {
+      this.view.hidden = true;
+      return;
+    }
+
     this.updateView();
   }
 }
